@@ -3,6 +3,7 @@ using GestionLibrosBlazor.Models;
 using Microsoft.EntityFrameworkCore;
 using Aplicada1.Core;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GestionLibrosBlazor.Services
 {
@@ -20,6 +21,26 @@ namespace GestionLibrosBlazor.Services
             {
                 contexto.Update(libros);
             }
+            return await contexto.SaveChangesAsync() > 0;
+        }
+
+        private async Task<bool> Existe (int libroId)
+        {
+            await using var contexto = await contextFactory.CreateDbContextAsync();
+            return await contexto.Libros.AnyAsync(l => l.LibroId == libroId);
+        }
+
+        private async Task<bool> Insertar(Libros libros)
+        {
+            await using var contexto = await contextFactory.CreateDbContextAsync();
+            contexto.Libros.Add(libros);
+            return await contexto.SaveChangesAsync() > 0;
+        }
+
+        private async Task<bool> Modificar(Libros libro)
+        {
+            await using var contexto = await contextFactory.CreateDbContextAsync();
+            contexto.Update(libro);
             return await contexto.SaveChangesAsync() > 0;
         }
 
