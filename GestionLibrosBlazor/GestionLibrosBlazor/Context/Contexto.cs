@@ -14,20 +14,24 @@ namespace GestionLibrosBlazor.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Libros>().HasData(
-                new List<Libros>()
+                new Libros
                 {
-                    new()
-                    {
+                    
+                    
                         LibroId = 1,
                         Titulo = "Cronicas de Narnia",
+                        Autor = "C.S Lewis",
+                        AnioPublicacion = 1950,
 
-                    },
-                    new()
-                    {
+                },
+                new Libros
+                {
                         LibroId = 2,
                         Titulo = "The perks of being a wallflower",
-                    }
+                        Autor = "Stephen Chbosky",
+                        AnioPublicacion = 1999,
                 }
+                
             );
             
             

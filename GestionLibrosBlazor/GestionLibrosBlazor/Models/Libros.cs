@@ -16,7 +16,6 @@ namespace GestionLibrosBlazor.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public int AnioPublicacion { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public string? Categoria { get; set; }
+       
     }
 }
