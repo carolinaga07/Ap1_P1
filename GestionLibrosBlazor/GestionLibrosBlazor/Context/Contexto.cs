@@ -5,7 +5,7 @@ namespace GestionLibrosBlazor.Context
 {
     public class Contexto : DbContext
     {
-        public  Contexto(DbContextOptions<Contexto> options) : base(options)
+        public Contexto(DbContextOptions<Contexto> options) : base(options)
         {
 
         }
@@ -16,25 +16,25 @@ namespace GestionLibrosBlazor.Context
             modelBuilder.Entity<Libros>().HasData(
                 new Libros
                 {
-                    
-                    
-                        LibroId = 1,
-                        Titulo = "Cronicas de Narnia",
-                        Autor = "C.S Lewis",
-                        AnioPublicacion = 1950,
+
+
+                    LibroId = 1,
+                    Titulo = "Cronicas de Narnia",
+                    Autor = "C.S Lewis",
+                    AnioPublicacion = 1950,
 
                 },
                 new Libros
                 {
-                        LibroId = 2,
-                        Titulo = "The perks of being a wallflower",
-                        Autor = "Stephen Chbosky",
-                        AnioPublicacion = 1999,
+                    LibroId = 2,
+                    Titulo = "The perks of being a wallflower",
+                    Autor = "Stephen Chbosky",
+                    AnioPublicacion = 1999,
                 }
-                
+
             );
-            
-            
+
+
             base.OnModelCreating(modelBuilder);
         }
     }
