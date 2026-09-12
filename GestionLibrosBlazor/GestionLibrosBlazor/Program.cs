@@ -1,10 +1,23 @@
 using GestionLibrosBlazor.Components;
+using GestionLibrosBlazor.Context;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+//contexto
+var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
+
+//servicio
+
+builder.Services.AddScoped<LibrosService>();
+
+
 
 var app = builder.Build();
 
