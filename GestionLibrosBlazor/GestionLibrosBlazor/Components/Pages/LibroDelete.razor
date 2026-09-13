@@ -1,7 +1,52 @@
 ﻿@page "/libro/delete/{LibroId:int}"
 
-@inject LibroService
+@inject LibrosService Service
+@inject NavigationManager Navigation
+
+<PageTitle>Delete</PageTitle>
+<div class="container">
+    <div class="card shadow-lg"></div>
+    <div class="card-header text-center">
+        <h5><strong>Datos del libro</strong></h5>
+    </div>
+    <div class="card-body">
+        <div class="text-center">
+            <h5><strong>Desea eliminar el libro?</strong></h5>
+        </div>
+        <ul class="mt-4">
+            <li><strong>LibroId:</strong>@libro.LibroId</li>
+            <li><strong>Titulo:</strong>@libro.Titulo</li
+            <li><strong>Autor:</strong>@libro.Autor</li>
+            <li><strong>Año:</strong>@libro.AnioPublicacion</li>
+        </ul>
+        <div class="border border-success p-2 mt-2">
+            <div class="card-footer text-center">
+                <a href="/libros" class="btn btn-primary"><span class="bi bi-arrow-left"></span>Volver</a>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Mensaje
 
 @code {
+    [Parameter]
+    public int LibroId{ get; set; }
+    public Libros libro { get; set; } = new Libros();
+    public string Mensaje { get; set; } = string.Empty;
 
+    protected override async Task OnInitializedAsync()
+    {
+        libro = await Service.Buscar(LibroId);
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await Service.Eliminar(libro.LibroId);
+        if (eliminado)
+        {
+            Navigation.NavigateTo("/libros");
+        }
+    }
 }
