@@ -46,16 +46,23 @@
 
 
 @code{
-    
+
     private Libros libro = new();
+    private string mensajeError = "";
 
     private async Task Guardar()
     {
+        if(await Service.ExisteTitulo(libro.Titulo!))
+        {
+            mensajeError = "Ya existe un libro con ese titulo.";
+            return;
+        }
         bool exito = await Service.Guardar(libro);
         if (exito)
         {
-            Navigation.NavigateTo("/libros");
+            Navigation.NavigateTo("/libros")
         }
+
     }
 
    

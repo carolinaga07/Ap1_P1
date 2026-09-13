@@ -68,5 +68,11 @@ namespace GestionLibrosBlazor.Services
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Libros.Where(criterio).AsNoTracking().ToListAsync();
         }
+
+        public async Task <bool> ExisteTitulo(string titulo, int libroId = 0)
+        {
+            await using var contexto = await contextFactory.CreateDbContextAsync();
+            return await contexto.Libros.AnyAsync(l => l.Titulo == titulo && l.LibroId != libroId);
+        }
     }
 }

@@ -1,0 +1,20 @@
+﻿using BlazorBootstrap;
+namespace GestionLibrosBlazor.Extensors
+{
+    public static class ToastServiceExtensions
+    {
+        public static ToastServiceExtensions ShowToast(this ToastService toastService, ToastType toastType, string title, string customMessage = null)
+        {
+            var message = new ToastMessage()
+            {
+                Type = toastType,
+                Title = title,
+                Message = customMessage ?? $"A las {DateTime.Now.ToString("hh:mm tt")}"
+            };
+            toastService.Notify(message);
+            return message;
+        }
+
+        public 
+    }
+}
