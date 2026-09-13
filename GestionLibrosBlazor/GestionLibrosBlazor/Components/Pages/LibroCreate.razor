@@ -16,7 +16,7 @@
                 
                 <div class="mb-3">
                     <label class="form-label">LibroId</label>
-                    <InputNumber class="form-control" @bind-Value="libro.LibroId" readonly></InputNumber>
+                    <InputNumber  class="form-control" @bind-Value="libro.LibroId" readonly > </InputNumber>
                 </div>
                
                
@@ -32,100 +32,15 @@
 
                 <div class="mb-3">
                     <label class="form-label">Año</label>
-                    <InputNumber class="form-control" @bind-Value="libro.AnioPublicacion@page "/libros/create"
-@inject LibrosService Service
-@inject NavigationManager Navigation
-
-<PageTitle>Crear Libros</PageTitle>
-<EditForm Model="libro" OnValidSubmit="Guardar">
-    <DataAnnotationsValidator />
-   
-    <div class="container">
-       <div class="card shadow-lg">
-          <div class="card-header text-center">
-            <h5 class="card-title">Crear Libro</h5>
-           </div>
-        
-           <div class="card-body">
-                
-                <div class="mb-3">
-                    <label class="form-label">LibroId</label>
-                    <InputNumber TValue="int" class="form-control" @bind-Value="libro.LibroId" readonly />
+                    <InputNumber class="form-control" @bind-Value="libro.AnioPublicacion" ></InputNumber>
                 </div>
-               
-               
-               <div class="mb-3">
-                    <label class="form-label">Titulo</label>
-                    <InputText class="form-control" @bind-Value="libro.Titulo" />
-                </div>
-
-                 <div class="mb-3">
-                    <label class="form-label">Autor</label>
-                    <InputText class="form-control" @bind-Value="libro.Autor" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Año</label>
-                    <InputNumber TValue="int" class="form-control" @bind-Value="libro.AnioPublicacion" />
-                </div>
-
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <a href="/libros" class="btn btn-secondary">Cancelar</a>
-            </div>
-         </div>
-       </div>
-</EditForm>@page "/libros/create"
-@inject LibrosService Service
-@inject NavigationManager Navigation
-
-<PageTitle>Crear Libros</PageTitle>
-<EditForm Model="libro" OnValidSubmit="Guardar">
-    <DataAnnotationsValidator />
-   
-    <div class="container">
-       <div class="card shadow-lg">
-          <div class="card-header text-center">
-            <h5 class="card-title">Crear Libro</h5>
-           </div>
-        
-           <div class="card-body">
-                
-                <div class="mb-3">
-                    <label class="form-label">LibroId</label>
-                    <InputNumber TValue="int" class="form-control" @bind-Value="libro.LibroId" readonly />
-                </div>
-               
-               
-               <div class="mb-3">
-                    <label class="form-label">Titulo</label>
-                    <InputText class="form-control" @bind-Value="libro.Titulo" />
-                </div>
-
-                 <div class="mb-3">
-                    <label class="form-label">Autor</label>
-                    <InputText class="form-control" @bind-Value="libro.Autor" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Año</label>
-                    <InputNumber TValue="int" class="form-control" @bind-Value="libro.AnioPublicacion" />
-                </div>
-
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <a href="/libros" class="btn btn-secondary">Cancelar</a>
-            </div>
-         </div>
-       </div>
-</EditForm>" ></InputNumber>
-                </div>
-
+                <div class></>
                 <button type="submit" class="btn btn-primary">Guardar</button>
                 <a href="/libros" class="btn btn-secondary">Cancelar</a>
             </div>
          </div>
        </div>
 </EditForm>
-
 
 
 @code{
