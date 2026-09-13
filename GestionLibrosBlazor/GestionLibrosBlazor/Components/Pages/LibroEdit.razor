@@ -1,7 +1,57 @@
 ﻿@page "/Libro/Edit/{LibroId:int}"
-@inject LibroService Service
-@inject 
+@inject LibrosService Service
+@inject NavigationManager Navigation
 
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title">Editar</h5>
+        </div>
+        <div class="card-body">
+            @if(libro == null)
+            {
+                <p>Cargando ...</p>
+            }
+            else
+            {
+                <EditForm Model="libro" OnValidSubmit="Guardar">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label class="form-label">Titulo</label>
+                        <InputText class="form-control" @bind-Value="libro.Titulo" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Autor</label>
+                        <InputText class="form-control" @bind-Value="libro.Autor" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="/libros" class="btn btn-secondary">Cancelar</a>
+                </EditForm>
+            }
+        </div>
+    </div>
+</div>
 @code {
+    [Parameter]
+    public int LibroId{ get; set; }
 
+    private Libros? libro;
+
+    protected override async Task OnInitializedAsync()
+    {
+        libro = await Service.Buscar(LibroId);
+    }
+
+    private async Task Guardar()
+    {
+        bool exito = await Service.Guardar(libro!);
+        if (exito)
+        {
+            Navigation.NavigateTo("/libros");
+        }
+    }
 }
