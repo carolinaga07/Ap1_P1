@@ -1,7 +1,21 @@
-﻿<h3>LibroCreate</h3> 
-@page "/Libro/Create"
+﻿
+@page "/Libros/Create"
+
 @inject LibrosService librosService
-@rendermode InteractiveServer
+
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Libros" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card title">Crear Libro</h5> 
+            </div>
+
+            <div class="card-body ">
 
 @code {
 
