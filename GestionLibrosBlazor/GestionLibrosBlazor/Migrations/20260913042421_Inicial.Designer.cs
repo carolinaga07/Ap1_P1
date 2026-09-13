@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionLibrosBlazor.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20260912172553_Inicial")]
+    [Migration("20260913042421_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
