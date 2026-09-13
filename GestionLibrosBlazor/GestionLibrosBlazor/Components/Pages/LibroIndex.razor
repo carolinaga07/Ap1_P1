@@ -78,11 +78,11 @@
 
         if(Filtro == "Titulo")
         {
-            ListaLibros = await service.GetList(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()))
+            ListaLibros = await service.GetList(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
         }
         else if(Filtro == "Autor")
         {
-            ListaLibros = await service.GetList(l => l.Autor.ToLower().Contains(ValorFiltro.ToLower()))
+            ListaLibros = await service.GetList(l => l.Autor.ToLower().Contains(ValorFiltro.ToLower()));
         }
     }
 

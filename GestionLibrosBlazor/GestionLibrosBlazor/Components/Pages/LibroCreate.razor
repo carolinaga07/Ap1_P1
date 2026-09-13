@@ -1,22 +1,48 @@
-﻿
-@page "/Libros/Create"
+﻿@page "/libros/crear"
+@inject LibrosService Service
+@inject NavigationManager Navigation
 
-@inject LibrosService librosService
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title">Crear Libro</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="libro" OnValidSubmit="Guardar">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label class="form-label">Titulo</label>
+                    <InputText class="form-control" @bind-Value="libro.Titulo" />
+                </div>
+
+                 <div class="mb-3">
+                    <label class="form-label">Autor</label>
+                    <InputText class="form-control" @bind-Value="libro.Autor" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="/libros" class="btn btn-secondary">Cancelar</a>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 
-@*HTML*@
-<PageTitle>Create</PageTitle>
-<EditForm Model="Libros" OnValidSubmit="Guardar">
-    <DataAnnotationsValidator />
 
-    <div class="container">
-        <div class="card shadow-lg">
-            <div class="card-header text-center">
-                <h5 class="card title">Crear Libro</h5> 
-            </div>
+@code{
+    
+    private Libros libro = new();
 
-            <div class="card-body ">
+    private async Task Guardar()
+    {
+        bool exito = await Service.Guardar(libro);
+        if (exito)
+        {
+            Navigation.NavigateTo("/libros");
+        }
+    }
 
-@code {
-
+   
 }
