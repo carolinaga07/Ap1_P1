@@ -8,7 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <None Remove="Data\GestorLibrosDb.db" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\GestorLibrosDb.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Services\" />
   </ItemGroup>
 
