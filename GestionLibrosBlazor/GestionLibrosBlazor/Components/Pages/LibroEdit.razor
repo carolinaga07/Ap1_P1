@@ -1,6 +1,7 @@
 ﻿@page "/libro/edit/{LibroId:int}"
 @inject LibrosService Service
 @inject NavigationManager Navigation
+@inject ToastService toastService
 
 <PageTitle>Edit</PageTitle>
 <EditForm Model="libro" OnValidSubmit="Modificar">
