@@ -8,10 +8,10 @@ namespace GestionLibrosBlazor.Models
         public int LibroId { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
-        public string? Titulo { get; set; }
+        public string Titulo { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Este campo es requerido")]
-        public string? Autor { get; set; }
+        public string Autor { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public int AnioPublicacion { get; set; }

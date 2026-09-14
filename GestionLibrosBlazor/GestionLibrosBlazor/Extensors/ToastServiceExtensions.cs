@@ -18,7 +18,7 @@ namespace GestionLibrosBlazor.Extensors
         }
 
         public static ToastMessage ShowSuccess(this ToastService toastService, string customMessage = null,
-            string title = "Sucess")
+            string title = "Success")
         {
             return toastService.ShowToast(ToastType.Success, title, customMessage);
         }

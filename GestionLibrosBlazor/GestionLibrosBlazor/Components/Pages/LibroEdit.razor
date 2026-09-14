@@ -1,10 +1,11 @@
 ﻿@page "/libro/edit/{LibroId:int}"
+@rendermode InteractiveServer
 @inject LibrosService Service
 @inject NavigationManager Navigation
 @inject ToastService toastService
 
 <PageTitle>Edit</PageTitle>
-<EditForm Model="libro" OnValidSubmit="Modificar">
+<EditForm Model="libro" OnValidSubmit="Modificar" FormName="editarLibro">
 <DataAnnotationsValidator />
                     
 <div class="container">
@@ -58,10 +59,18 @@
 
     private async Task Modificar()
     {
+        if (await Service.ExisteTitulo(libro!.Titulo!, LibroId))
+        {
+            toastService.ShowError("Ya existe un libro con ese titulo.");
+            return;
+        }
+
         bool exito = await Service.Guardar(libro!);
         if (exito)
         {
             toastService.ShowSuccess("Libro actualizado correctamente");
+
+            await Task.Delay(1500);
             Navigation.NavigateTo("/libros");
         }
     }

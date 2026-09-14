@@ -1,12 +1,11 @@
 ﻿@page "/libros/create"
 @rendermode InteractiveServer
-@using GestionLibrosBlazor.Extensors
 @inject LibrosService Service
 @inject NavigationManager Navigation
 @inject ToastService toastService
 
 <PageTitle>Crear Libros</PageTitle>
-<EditForm Model="libro" OnValidSubmit="Guardar">
+<EditForm Model="libro" OnValidSubmit="Guardar" FormName="crearLibro" >
     <DataAnnotationsValidator />
    
     <div class="container">
