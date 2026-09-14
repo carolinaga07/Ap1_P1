@@ -1,9 +1,11 @@
-﻿using BlazorBootstrap;
+﻿using System;
+using BlazorBootstrap;
 namespace GestionLibrosBlazor.Extensors
 {
     public static class ToastServiceExtensions
     {
-        public static ToastServiceExtensions ShowToast(this ToastService toastService, ToastType toastType, string title, string customMessage = null)
+
+        public static ToastMessage ShowToast(this ToastService toastService, ToastType toastType, string title, string customMessage = null)
         {
             var message = new ToastMessage()
             {
@@ -15,6 +17,24 @@ namespace GestionLibrosBlazor.Extensors
             return message;
         }
 
-        public 
+        public static ToastMessage ShowSuccess(this ToastService toastService, string customMessage = null,
+            string title = "Sucess")
+        {
+            return toastService.ShowToast(ToastType.Success, title, customMessage);
+        }
+
+        public static ToastMessage ShowWarning(this ToastService toastService, string customMessage = null,
+            string title = "Warning")
+        {
+            return toastService.ShowToast(ToastType.Warning, title, customMessage);
+        }
+
+        public static ToastMessage ShowError(this ToastService toastService, string customMessage = null,
+        string title = "Error")
+        {
+            return toastService.ShowToast(ToastType.Danger, title, customMessage);
+        }
+
+
     }
 }

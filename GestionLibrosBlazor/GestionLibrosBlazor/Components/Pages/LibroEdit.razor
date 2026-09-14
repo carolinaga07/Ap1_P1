@@ -60,6 +60,7 @@
         bool exito = await Service.Guardar(libro!);
         if (exito)
         {
+            toastService.ShowSuccess("Libro actualizado correctamente");
             Navigation.NavigateTo("/libros");
         }
     }
