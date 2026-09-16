@@ -15,7 +15,6 @@ namespace GestionLibrosBlazor.Models
         public string Direccion { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El email es requerido")]
-
         public string Email { get; set; } = string.Empty;
 
         public DateFormat FechaNacimiento { get; set; }
