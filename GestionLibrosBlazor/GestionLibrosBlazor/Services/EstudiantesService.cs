@@ -45,7 +45,7 @@ namespace GestionLibrosBlazor.Services
         public async Task <Estudiantes?> Buscar(int estudianteId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Estudiantes.AsNoTracking().FirstOrDefaultAsync(e => e.EstudianteId = estudianteId);
+            return await contexto.Estudiantes.AsNoTracking().FirstOrDefaultAsync(e => e.EstudianteId == estudianteId);
         }
 
         public async Task <bool> Eliminar(int estudianteId)
@@ -60,7 +60,7 @@ namespace GestionLibrosBlazor.Services
             return await contexto.SaveChangesAsync() > 0;
         }
 
-        public async Task <List <Estudiantes>> GetEstudiantes(Expression<Func<Estudiantes, bool>> criterio)
+        public async Task <List <Estudiantes>> GetList(Expression<Func<Estudiantes, bool>> criterio)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Estudiantes.Where(criterio).AsNoTracking().ToListAsync();
@@ -69,7 +69,7 @@ namespace GestionLibrosBlazor.Services
         public async Task<bool> ExisteNombre(string nombre, int estudianteId = 0)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            await contexto.Estudiantes.AnyAsync(e => e.Nombres == nombre && e.EstudianteId != estudianteId);
+            return await contexto.Estudiantes.AnyAsync(e => e.Nombres == nombre && e.EstudianteId != estudianteId);
         }
     }
 }
