@@ -10,6 +10,7 @@ namespace GestionLibrosBlazor.Context
 
         }
         public DbSet<Libros> Libros { get; set; }
+        public DbSet <Estudiantes > Estudiantes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,26 @@ namespace GestionLibrosBlazor.Context
 
             );
 
+            modelBuilder.Entity<Estudiantes>().HasData(
+                new Estudiantes
+                {
+
+
+                    LibroId = 1,
+                    Titulo = "Cronicas de Narnia",
+                    Autor = "C.S Lewis",
+                    AnioPublicacion = 1950,
+
+                },
+                new Estudiantes
+                {
+                    LibroId = 2,
+                    Titulo = "The perks of being a wallflower",
+                    Autor = "Stephen Chbosky",
+                    AnioPublicacion = 1999,
+                }
+
+            );
 
             base.OnModelCreating(modelBuilder);
         }
