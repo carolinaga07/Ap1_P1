@@ -13,13 +13,13 @@ namespace GestionLibrosBlazor.Services
             await using var contexto = await contextFactory.CreateDbContextAsync();
             if(estudiantes.EstudianteId == 0)
             {
-                contexto.Estudiantes.Add(estudiantes);
+                return await Insertar(estudiantes);
             }
             else
             {
-                contexto.Update(estudiantes);
+                return await Modificar(estudiantes);
             }
-            return await contexto.SaveChangesAsync() > 0;
+           
         }
 
         private async Task<bool> Existe (int estudianteId)
@@ -35,10 +35,10 @@ namespace GestionLibrosBlazor.Services
             return await contexto.SaveChangesAsync() > 0;
         }
 
-        private async Task <bool> Modificar(Libros libros)
+        private async Task <bool> Modificar(Estudiantes estudiantes)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            contexto.Update(libros);
+            contexto.Update(estudiantes);
             return await contexto.SaveChangesAsync() > 0;
         }
 

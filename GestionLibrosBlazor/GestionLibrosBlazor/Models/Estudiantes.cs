@@ -17,7 +17,7 @@ namespace GestionLibrosBlazor.Models
         [Required(ErrorMessage = "El email es requerido")]
         public string Email { get; set; } = string.Empty;
         [Required(ErrorMessage ="La fecha de nacimiento es requerida")]
-        public DateFormat FechaNacimiento { get; set; }
+        public DateTime FechaNacimiento { get; set; }
 
 
     }
