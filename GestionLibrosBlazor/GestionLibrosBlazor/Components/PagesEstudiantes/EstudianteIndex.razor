@@ -65,7 +65,7 @@
                             <td>@estudiante.Nombres</td>
                             <td>@estudiante.Direccion</td>
                             <td>@estudiante.Email</td>
-                            <td>@estudiante.FechaNacimiento</td>
+                            <td>@estudiante.FechaNacimiento.ToString("dd/MM/yyyy")</td>
                             <td>
                                 <a href="/estudiante/edit/@estudiante.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                                 <a href="/estudiante/delete/@estudiante.EstudianteId" class="btn btn-outline-danger bi bi-trash"></a>
