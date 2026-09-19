@@ -50,7 +50,7 @@
     [Parameter]
     public int LibroId{ get; set; }
 
-    private Libros? libro;
+    private Libros libro = new();
 
     protected override async Task OnInitializedAsync()
     {
