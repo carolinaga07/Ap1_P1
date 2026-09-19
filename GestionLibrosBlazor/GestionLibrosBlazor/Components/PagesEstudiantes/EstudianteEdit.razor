@@ -55,7 +55,7 @@
     [Parameter]
     public int EstudianteId { get; set; }
 
-    private Estudiantes? estudiante;
+    private Estudiantes estudiante = new();
 
     protected override async Task OnInitializedAsync()
     {

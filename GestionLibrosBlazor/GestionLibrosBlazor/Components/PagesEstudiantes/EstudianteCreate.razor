@@ -25,21 +25,25 @@
                <div class="mb-3">
                     <label class="form-label">Nombres</label>
                     <InputText class="form-control" @bind-Value="estudiante.Nombres" />
+                    <ValidationMessage For="@(() => estudiante.Nombres)" />
                 </div>
 
                  <div class="mb-3">
                     <label class="form-label">Direccion</label>
                     <InputText class="form-control" @bind-Value="estudiante.Direccion" />
+                     <ValidationMessage For="@(() => estudiante.Direccion)" />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Email</label>
                     <InputText class="form-control" @bind-Value="estudiante.Email" ></InputText>
+                     <ValidationMessage For="@(() => estudiante.Email)" />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Fecha de nacimiento</label>
                     <InputDate class="form-control" @bind-Value="estudiante.FechaNacimiento"></InputDate>
+                     <ValidationMessage For="@(() => estudiante.FechaNacimiento)" />
                 </div>
                 <div class="card-footer text-center mt-2">
                     <a href="/estudiantes" class="btn btn-secondary"><span class="bi bi-arrow-left"></span>Volver</a>

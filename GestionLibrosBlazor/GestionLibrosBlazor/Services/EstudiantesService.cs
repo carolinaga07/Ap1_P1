@@ -10,7 +10,7 @@ namespace GestionLibrosBlazor.Services
     {
         public async Task<bool> Guardar(Estudiantes estudiantes)
         {
-            await using var contexto = await contextFactory.CreateDbContextAsync();
+            
             if(estudiantes.EstudianteId == 0)
             {
                 return await Insertar(estudiantes);
