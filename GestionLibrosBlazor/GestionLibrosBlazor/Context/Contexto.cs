@@ -10,6 +10,7 @@ namespace GestionLibrosBlazor.Context
 
         }
         public DbSet<Libros> Libros { get; set; }
+        public DbSet <Estudiantes > Estudiantes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

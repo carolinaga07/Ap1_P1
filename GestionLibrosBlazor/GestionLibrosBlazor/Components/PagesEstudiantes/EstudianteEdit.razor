@@ -1,0 +1,82 @@
+﻿@page "/estudiante/edit/{EstudianteId:int}"
+@rendermode InteractiveServer
+@inject EstudiantesService Service
+@inject NavigationManager Navigation
+@inject ToastService toastService
+
+<PageTitle>Edit</PageTitle>
+<EditForm Model="estudiante" OnValidSubmit="Modificar" FormName="editarEstudiante">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Editar Libro</h5>
+            </div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>EstudianteId</strong></label>
+                    <InputNumber class="form-control" @bind-Value="estudiante.EstudianteId" readonly></InputNumber>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nombres</label>
+                    <InputText class="form-control" @bind-Value="estudiante.Nombres" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Direccion</label>
+                    <InputText class="form-control" @bind-Value="estudiante.Direccion" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <InputText class="form-control" @bind-Value="estudiante.Email"></InputText>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha de nacimiento</label>
+                    <InputDate class="form-control" @bind-Value="estudiante.FechaNacimiento"></InputDate>
+                </div>
+
+                <div class="card-footer text-center mt-2">
+                    <a href="/estudiantes" class="btn btn-secondary"><span class="bi bi-arrow-left"></span>Volver</a>
+                    <button type="submit" class="btn btn-primary bi bi-floppy">Guardar</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int EstudianteId { get; set; }
+
+    private Estudiantes estudiante = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        estudiante = await Service.Buscar(EstudianteId);
+    }
+
+    private async Task Modificar()
+    {
+        if (await Service.ExisteNombre(estudiante!.Nombres!, EstudianteId))
+        {
+            toastService.ShowError("Ya existe un estudiante con ese nombre.");
+            return;
+        }
+
+        bool exito = await Service.Guardar(estudiante!);
+        if (exito)
+        {
+            toastService.ShowSuccess("Estudiante actualizado correctamente");
+
+            await Task.Delay(1500);
+            Navigation.NavigateTo("/estudiantes");
+        }
+    }
+}
