@@ -13,12 +13,11 @@ builder.Services.AddRazorComponents()
 
 //contexto
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
-builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
 
 //servicio
 
 builder.Services.AddScoped<LibrosService>();
-builder.Services.AddScoped<EstudiantesService>();
 
 builder.Services.AddBlazorBootstrap();
 
