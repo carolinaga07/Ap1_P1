@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionLibrosBlazor.Models
 {
@@ -18,6 +19,9 @@ namespace GestionLibrosBlazor.Models
         public string Email { get; set; } = string.Empty;
         [Required(ErrorMessage ="La fecha de nacimiento es requerida")]
         public DateTime FechaNacimiento { get; set; }
+
+        [InverseProperty("Estudiantes")]
+        public virtual PrestamoLibro? Prestamo { get; set; }
 
 
     }

@@ -18,12 +18,12 @@ namespace GestionLibrosBlazor.Models
         public int LibroId { get; set; }
 
         [ForeignKey("EstudianteId")]
-        [InverseProperty("PrestamoLibro")]
+        [InverseProperty("Prestamo")]
         public virtual Estudiantes Estudiantes { get; set; } = null;
 
         [ForeignKey("LibroId")]
-        [InverseProperty("PrestamoLibro")]
+        [InverseProperty("Prestamo")]
         public virtual Libros Libros { get; set; } = null;
-        public object Estudiante { get; internal set; }
+        
     }
 }
