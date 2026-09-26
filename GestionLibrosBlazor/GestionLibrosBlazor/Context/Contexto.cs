@@ -12,6 +12,8 @@ namespace GestionLibrosBlazor.Context
         public DbSet<Libros> Libros { get; set; }
         public DbSet <Estudiantes > Estudiantes { get; set; }
 
+        public DbSet<PrestamoLibro> Prestamos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Libros>().HasData(
