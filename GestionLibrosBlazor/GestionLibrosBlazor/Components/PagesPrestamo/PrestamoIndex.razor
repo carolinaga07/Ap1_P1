@@ -1,0 +1,79 @@
+﻿@page "/prestamos"
+@inject PrestamoService PrestamoService
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-content-center mb-4">
+            <h5 class="card-title">Registro de Prestamos</h5>
+            <a href="/prestamos/create" class="btn btn-primary"><span class="bi bi mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        <option value="Estudiante">Estudiante</option>
+                        <option value="Libro">Libro</option>
+                    </InputSelect>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+                <QuickGrid Items="ListaPrestamos.AsQueryable()" Class="table table-hover">
+                    <PropertyColumn Property="p => p.PrestamoId" Title="PrestamoId" Sortable="true" />
+                    <PropertyColumn Property="p => p.Estudiantes.Nombres" Title="Estudiante" Sortable="true" />
+                    <PropertyColumn Property="p => p.Libros.Titulo" Title="Libro" Sortable="true" />
+                    <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha" Sortable="true" />
+                    <TemplateColumn Title="Opciones">
+                        <a href="/prestamos/edit/@context.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                    </TemplateColumn>
+                </QuickGrid>
+            </div>
+        </div>
+        <div class="card-footer">
+            <label>Cantidad: @ListaPrestamos.Count()</label>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public List<PrestamoLibro> ListaPrestamos { get; set; } = new();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+    }
+
+    private async Task Buscar()
+    {
+        if(ValorFiltro.Trim() == "")
+        {
+            ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+            return;
+        }
+
+        if(Filtro == "Estudiante")
+        {
+            ListaPrestamos = await PrestamoService.GetList(p => p.Estudiantes.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if(Filtro == "Libro")
+        {
+            ListaPrestamos = await PrestamoService.GetList(p => p.Libros.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+    }
+
+    private async Task Restablecer()
+    {
+        ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+
+}
