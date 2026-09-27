@@ -40,3 +40,24 @@ VALUES (N'20260918034843_Initial', N'10.0.12');
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+CREATE TABLE [Prestamos] (
+    [PrestamoId] int NOT NULL IDENTITY,
+    [FechaPrestamo] datetime2 NOT NULL,
+    [EstudianteId] int NOT NULL,
+    [LibroId] int NOT NULL,
+    CONSTRAINT [PK_Prestamos] PRIMARY KEY ([PrestamoId]),
+    CONSTRAINT [FK_Prestamos_Estudiantes_EstudianteId] FOREIGN KEY ([EstudianteId]) REFERENCES [Estudiantes] ([EstudianteId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Prestamos_Libros_LibroId] FOREIGN KEY ([LibroId]) REFERENCES [Libros] ([LibroId]) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX [IX_Prestamos_EstudianteId] ON [Prestamos] ([EstudianteId]);
+
+CREATE UNIQUE INDEX [IX_Prestamos_LibroId] ON [Prestamos] ([LibroId]);
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260927000435_AgregarRelacionPrestamoEstudiante', N'10.0.12');
+
+COMMIT;
+GO
+

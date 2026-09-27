@@ -1,0 +1,128 @@
+﻿@page "/prestamos"
+@inject PrestamoService PrestamoService
+@inject ToastService toastService
+
+<PageTitle>Registro de Prestamos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-content-center mb-4">
+            <h5 class="card-title">Registro de Prestamos</h5>
+            <a href="/prestamos/create" class="btn btn-primary"><span class="bi bi mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        <option value="Estudiante">Estudiante</option>
+                        <option value="Libro">Libro</option>
+                    </InputSelect>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+                <QuickGrid Items="ListaPrestamos.AsQueryable()" Class="table table-hover">
+                    <PropertyColumn Property="p => p.PrestamoId" Title="PrestamoId" Sortable="true" />
+                    <PropertyColumn Property="p => p.Estudiantes.Nombres" Title="Estudiante" Sortable="true" />
+                    <PropertyColumn Property="p => p.Libros.Titulo" Title="Libro" Sortable="true" />
+                    <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha" Sortable="true" />
+                    <TemplateColumn Title="Opciones">
+                        <a href="/prestamos/edit/@context.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalEliminar"
+                        @onclick="() => MostrarModal(context)"></button>
+                    </TemplateColumn>
+                </QuickGrid>
+            </div>
+        </div>
+        <div class="card-footer">
+            <label>Cantidad: @ListaPrestamos.Count()</label>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminacion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @if(PrestamoAEliminar != null)
+                {
+                    <p>Eliminar el prestamo del libro <strong>@PrestamoAEliminar.Libros.Titulo</strong> a <strong>@PrestamoAEliminar.Estudiantes.Nombres</strong>?</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="ConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<PrestamoLibro> ListaPrestamos { get; set; } = new();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    public PrestamoLibro? PrestamoAEliminar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+    }
+
+    private async Task Buscar()
+    {
+        if(ValorFiltro.Trim() == "")
+        {
+            ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+            return;
+        }
+
+        if(Filtro == "Estudiante")
+        {
+            ListaPrestamos = await PrestamoService.GetList(p => p.Estudiantes.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if(Filtro == "Libro")
+        {
+            ListaPrestamos = await PrestamoService.GetList(p => p.Libros.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+    }
+
+    private async Task Restablecer()
+    {
+        ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+
+    private void MostrarModal(PrestamoLibro prestamoLibro)
+    {
+        PrestamoAEliminar = prestamoLibro;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (PrestamoAEliminar == null)
+        {
+            return;
+        }
+
+        bool eliminado = await PrestamoService.Eliminar(PrestamoAEliminar.PrestamoId);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Prestamo eliminado correctamente.");
+            ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+        }
+        else
+        {
+            toastService.ShowError("no se pudo eliminar el prestamo");
+        }
+        PrestamoAEliminar = null; 
+    }
+}

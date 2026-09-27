@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionLibrosBlazor.Models
 {
@@ -15,6 +16,9 @@ namespace GestionLibrosBlazor.Models
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public int AnioPublicacion { get; set; }
+
+        [InverseProperty("Libros")]
+        public virtual PrestamoLibro? Prestamo { get; set; }
 
        
     }
