@@ -60,16 +60,16 @@ namespace GestionLibrosBlazor.Services
                 .Where(criterio).AsNoTracking().ToListAsync();
         }
 
-        public async Task<bool> EstudianteTienePrestamo(int estudianteId)
+        public async Task<bool> EstudianteTienePrestamo(int estudianteId, int prestamoId = 0)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Prestamos.AnyAsync(p => p.EstudianteId == estudianteId);
+            return await contexto.Prestamos.AnyAsync(p => p.EstudianteId == estudianteId && p.PrestamoId != prestamoId);
         }
 
-        public async Task<bool> LibroEstaPrestado(int libroId)
+        public async Task<bool> LibroEstaPrestado(int libroId, int prestamoId = 0)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Prestamos.AnyAsync(p => p.LibroId == libroId);
+            return await contexto.Prestamos.AnyAsync(p => p.LibroId == libroId && p.PrestamoId != prestamoId);
         }
     }
 }
