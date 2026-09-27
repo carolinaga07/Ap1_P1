@@ -1,0 +1,97 @@
+﻿@page "/prestamos/create"
+
+@inject PrestamoService prestamoService
+@inject EstudiantesService estudiantesService
+@inject LibrosService librosService
+@inject NavigationManager Navigation
+@inject ToastService toastService
+
+<PageTitle>Create</PageTitle>
+<EditForm Model="Prestamo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Prestamo</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Estudiante</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Prestamo.EstudianteId">
+                        <option value="0">Elija una opcion: </option>
+                        @foreach(var estudiante in ListaEstudiantes)
+                        {
+                            <option value="@estudiante.EstudianteId">@estudiante.Nombres</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Prestamo.EstudianteId)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Libro</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Prestamo.LibroId">
+                        <option value="0">Elija una opcion</option>
+                        @foreach (var libro in ListaLibros)
+                        {
+                            <option value="@libro.LibroId">@libro.Titulo</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Prestamo.LibroId)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo"></InputDate>
+                    <ValidationMessage For="(() => Prestamo.FechaPrestamo)" />
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="/prestamos" class="btn btn-secondary bi bi-arrow-left">Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy">Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public PrestamoLibro Prestamo { get; set; } = null;
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new();
+    public List<Libros> ListaLibros { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaEstudiantes = await estudiantesService.GetList(e => e.EstudianteId > 0);
+        ListaLibros = await librosService.GetList(l => l.LibroId > 0);
+        Prestamo.FechaPrestamo = DateTime.Today;
+    }
+
+    private async Task Guardar()
+    {
+        if (await prestamoService.EstudianteTienePrestamo(Prestamo.EstudianteId))
+        {
+            toastService.ShowError("Este estudiante ya tiene un prestamo activo.");
+            return;
+        }
+
+        if(await prestamoService.LibroEstaPrestado(Prestamo.LibroId))
+        {
+            toastService.ShowError("Este libro ya esta prestado a otro estudiante.");
+            return;
+        }
+
+        bool creado = await prestamoService.Guardar(Prestamo);
+        if (creado)
+        {
+            toastService.ShowSuccess("Prestamo guardado correctamente");
+            Navigation.NavigateTo("/prestamos");
+        }
+        else
+        {
+            toastService.ShowError("No se pudo guardar correctamente");
+        }
+
+    }
+}
