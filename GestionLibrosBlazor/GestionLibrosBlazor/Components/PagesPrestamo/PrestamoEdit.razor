@@ -61,7 +61,7 @@
     [Parameter]
     public int PrestamoId { get; set; }
 
-    private PrestamoLibro? Prestamo { get; set; }
+    private PrestamoLibro Prestamo { get; set; } = new();
     public List<Estudiantes> ListaEstudiantes { get; set; } = new();
     public List<Libros> ListaLibros { get; set; } = new();
 
