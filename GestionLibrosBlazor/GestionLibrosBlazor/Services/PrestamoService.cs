@@ -42,7 +42,9 @@ namespace GestionLibrosBlazor.Services
         public async Task<PrestamoLibro?> Buscar (int prestamoId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Prestamos.Include(p => p.Estudiantes).Include(p => p.Libros)
+            return await contexto.Prestamos
+                .Include(p => p.Estudiantes)
+                .Include(p => p.Libros)
                 .FirstOrDefaultAsync(p => p.PrestamoId == prestamoId);
 
         }
