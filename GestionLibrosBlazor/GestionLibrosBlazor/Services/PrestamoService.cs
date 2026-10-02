@@ -3,8 +3,7 @@ using GestionLibrosBlazor.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace GestionLibrosBlazor.Services
-{
+namespace GestionLibrosBlazor.Services;
     public class PrestamoService(IDbContextFactory<Contexto> contextFactory): Aplicada1.Core.IService<PrestamoLibro,int>
     {
         private async Task<bool> Existe(int prestamoId)
@@ -81,4 +80,3 @@ namespace GestionLibrosBlazor.Services
                 .AnyAsync(p => p.LibroId == libroId && p.PrestamoId != prestamoId);
         }
     }
-}
