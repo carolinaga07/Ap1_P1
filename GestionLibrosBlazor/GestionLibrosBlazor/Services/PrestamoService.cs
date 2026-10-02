@@ -46,7 +46,6 @@ namespace GestionLibrosBlazor.Services
                 .Include(p => p.Estudiantes)
                 .Include(p => p.Libros)
                 .FirstOrDefaultAsync(p => p.PrestamoId == prestamoId);
-
         }
 
         public async Task<bool> Eliminar(int prestamoId)
