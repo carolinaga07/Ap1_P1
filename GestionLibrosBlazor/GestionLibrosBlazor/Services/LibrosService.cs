@@ -27,7 +27,8 @@ namespace GestionLibrosBlazor.Services
         private async Task<bool> Existe (int libroId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Libros.AnyAsync(l => l.LibroId == libroId);
+            return await contexto.Libros
+                .AnyAsync(l => l.LibroId == libroId);
         }
 
         private async Task<bool> Insertar(Libros libros)
