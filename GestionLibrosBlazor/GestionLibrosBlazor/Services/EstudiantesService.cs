@@ -45,7 +45,9 @@ namespace GestionLibrosBlazor.Services
         public async Task <Estudiantes?> Buscar(int estudianteId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Estudiantes.AsNoTracking().FirstOrDefaultAsync(e => e.EstudianteId == estudianteId);
+            return await contexto.Estudiantes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.EstudianteId == estudianteId);
         }
 
         public async Task <bool> Eliminar(int estudianteId)
