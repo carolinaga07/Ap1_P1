@@ -5,8 +5,8 @@ using Aplicada1.Core;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace GestionLibrosBlazor.Services
-{
+namespace GestionLibrosBlazor.Services;
+
     public class LibrosService(IDbContextFactory<Contexto> contextFactory
         ) : Aplicada1.Core.IService<Libros, int>
     { 
@@ -82,4 +82,3 @@ namespace GestionLibrosBlazor.Services
                 .AnyAsync(l => l.Titulo == titulo && l.LibroId != libroId);
         }
     }
-}
