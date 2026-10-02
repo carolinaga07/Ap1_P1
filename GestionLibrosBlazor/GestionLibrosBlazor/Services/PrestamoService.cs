@@ -52,7 +52,9 @@ namespace GestionLibrosBlazor.Services
         public async Task<bool> Eliminar(int prestamoId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Prestamos.Where(p => p.PrestamoId == prestamoId).ExecuteDeleteAsync() > 0;
+            return await contexto.Prestamos
+                .Where(p => p.PrestamoId == prestamoId)
+                .ExecuteDeleteAsync() > 0;
         }
 
         public async Task<List<PrestamoLibro>> GetList(Expression<Func<PrestamoLibro, bool>> criterio)
