@@ -8,7 +8,6 @@ namespace GestionLibrosBlazor.Context
         public Contexto(DbContextOptions<Contexto> options) : base(options){}
         public DbSet<Libros> Libros { get; set; }
         public DbSet <Estudiantes > Estudiantes { get; set; }
-
         public DbSet<PrestamoLibro> Prestamos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
