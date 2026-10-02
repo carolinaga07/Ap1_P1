@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GestionLibrosBlazor.Services
 {
-    public class LibrosService(IDbContextFactory<Contexto> contextFactory) : Aplicada1.Core.IService<Libros, int>
+    public class LibrosService(IDbContextFactory<Contexto> contextFactory
+        ) : Aplicada1.Core.IService<Libros, int>
     { 
         public async Task<bool> Guardar(Libros libros)
         {
