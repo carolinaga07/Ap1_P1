@@ -51,7 +51,6 @@ namespace GestionLibrosBlazor.Services
             return await contexto.Libros
                 .AsNoTracking()
                 .FirstOrDefaultAsync(l => l.LibroId == libroId);
-
         }
 
         public async Task<bool> Eliminar(int libroId)
