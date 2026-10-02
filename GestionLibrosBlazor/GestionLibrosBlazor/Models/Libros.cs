@@ -19,7 +19,5 @@ namespace GestionLibrosBlazor.Models
 
         [InverseProperty("Libros")]
         public virtual PrestamoLibro? Prestamo { get; set; }
-
-       
     }
 }
