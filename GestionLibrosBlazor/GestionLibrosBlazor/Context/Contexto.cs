@@ -1,8 +1,8 @@
 ﻿using GestionLibrosBlazor.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace GestionLibrosBlazor.Context
-{
+namespace GestionLibrosBlazor.Context;
+
     public class Contexto : DbContext
     {
         public Contexto(DbContextOptions<Contexto> options) : base(options){}
@@ -15,8 +15,6 @@ namespace GestionLibrosBlazor.Context
             modelBuilder.Entity<Libros>().HasData(
                 new Libros
                 {
-
-
                     LibroId = 1,
                     Titulo = "Cronicas de Narnia",
                     Autor = "C.S Lewis",
@@ -30,11 +28,7 @@ namespace GestionLibrosBlazor.Context
                     Autor = "Stephen Chbosky",
                     AnioPublicacion = 1999,
                 }
-
             );
-
-
             base.OnModelCreating(modelBuilder);
         }
     }
-}

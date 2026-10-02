@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GestionLibrosBlazor.Models
-{
+namespace GestionLibrosBlazor.Models;
+
     public class Estudiantes
     {
         [Key]
@@ -22,7 +22,4 @@ namespace GestionLibrosBlazor.Models
 
         [InverseProperty("Estudiantes")]
         public virtual PrestamoLibro? Prestamo { get; set; }
-
-
     }
-}

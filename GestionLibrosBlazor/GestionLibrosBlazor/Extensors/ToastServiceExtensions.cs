@@ -4,7 +4,6 @@ namespace GestionLibrosBlazor.Extensors
 {
     public static class ToastServiceExtensions
     {
-
         public static ToastMessage ShowToast(this ToastService toastService, ToastType toastType, string title, string customMessage = null)
         {
             var message = new ToastMessage()
@@ -34,7 +33,6 @@ namespace GestionLibrosBlazor.Extensors
         {
             return toastService.ShowToast(ToastType.Danger, title, customMessage);
         }
-
 
     }
 }
