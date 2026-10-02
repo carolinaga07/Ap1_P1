@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Aplicada1.Core;
 using System.Linq.Expressions;
 
-namespace GestionLibrosBlazor.Services
-{
+namespace GestionLibrosBlazor.Services;
+
     public class EstudiantesService(IDbContextFactory<Contexto> contextFactory
         ): Aplicada1.Core.IService<Estudiantes, int>
     {
@@ -76,4 +76,3 @@ namespace GestionLibrosBlazor.Services
             return await contexto.Estudiantes.AnyAsync(e => e.Nombres == nombre && e.EstudianteId != estudianteId);
         }
     }
-}
