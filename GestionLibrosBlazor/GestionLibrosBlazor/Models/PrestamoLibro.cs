@@ -23,7 +23,6 @@ namespace GestionLibrosBlazor.Models
 
         [ForeignKey("LibroId")]
         [InverseProperty("Prestamo")]
-        public virtual Libros Libros { get; set; } = null;
-        
+        public virtual Libros Libros { get; set; } = null; 
     }
 }
