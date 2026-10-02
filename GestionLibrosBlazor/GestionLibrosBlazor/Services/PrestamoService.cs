@@ -58,8 +58,12 @@ namespace GestionLibrosBlazor.Services
         public async Task<List<PrestamoLibro>> GetList(Expression<Func<PrestamoLibro, bool>> criterio)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Prestamos.Include(p => p.Estudiantes).Include(p => p.Libros)
-                .Where(criterio).AsNoTracking().ToListAsync();
+            return await contexto.Prestamos
+                .Include(p => p.Estudiantes)
+                .Include(p => p.Libros)
+                .Where(criterio)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<bool> EstudianteTienePrestamo(int estudianteId, int prestamoId = 0)
