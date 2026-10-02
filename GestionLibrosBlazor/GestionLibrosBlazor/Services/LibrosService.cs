@@ -66,7 +66,10 @@ namespace GestionLibrosBlazor.Services
         public async Task<List<Libros>> GetList(Expression<Func<Libros, bool>> criterio)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Libros.Where(criterio).AsNoTracking().ToListAsync();
+            return await contexto.Libros
+                .Where(criterio)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task <bool> ExisteTitulo(string titulo, int libroId = 0)
