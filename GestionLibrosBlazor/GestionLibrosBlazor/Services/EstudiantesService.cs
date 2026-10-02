@@ -6,7 +6,8 @@ using System.Linq.Expressions;
 
 namespace GestionLibrosBlazor.Services
 {
-    public class EstudiantesService(IDbContextFactory<Contexto> contextFactory): Aplicada1.Core.IService<Estudiantes, int>
+    public class EstudiantesService(IDbContextFactory<Contexto> contextFactory
+        ): Aplicada1.Core.IService<Estudiantes, int>
     {
         public async Task<bool> Guardar(Estudiantes estudiantes)
         {
