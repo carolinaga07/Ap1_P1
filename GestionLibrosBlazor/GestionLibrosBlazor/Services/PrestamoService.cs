@@ -65,7 +65,8 @@ namespace GestionLibrosBlazor.Services
         public async Task<bool> EstudianteTienePrestamo(int estudianteId, int prestamoId = 0)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            return await contexto.Prestamos.AnyAsync(p => p.EstudianteId == estudianteId && p.PrestamoId != prestamoId);
+            return await contexto.Prestamos
+                .AnyAsync(p => p.EstudianteId == estudianteId && p.PrestamoId != prestamoId);
         }
 
         public async Task<bool> LibroEstaPrestado(int libroId, int prestamoId = 0)
