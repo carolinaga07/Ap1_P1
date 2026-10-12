@@ -57,9 +57,9 @@
 </EditForm>
 
 @code {
-    public PrestamoLibro Prestamo { get; set; } = new();
-    public List<Estudiantes> ListaEstudiantes { get; set; } = new();
-    public List<Libros> ListaLibros { get; set; } = new();
+    public PrestamoLibro Prestamo { get; set; } = new PrestamoLibro();
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
+    public List<Libros> ListaLibros { get; set; } = new List<Libros>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,28 +70,37 @@
 
     private async Task Guardar()
     {
-        if (await prestamoService.EstudianteTienePrestamo(Prestamo.EstudianteId))
+        if (await prestamoService.EstudianteTienePrestamo(
+            Prestamo.EstudianteId))
         {
-            toastService.ShowError("Este estudiante ya tiene un prestamo activo.");
+            toastService.ShowError(
+                "Este estudiante ya tiene un préstamo activo.");
             return;
         }
 
-        if(await prestamoService.LibroEstaPrestado(Prestamo.LibroId))
+        if (await prestamoService.LibroEstaPrestado(
+            Prestamo.LibroId))
         {
-            toastService.ShowError("Este libro ya esta prestado a otro estudiante.");
+            toastService.ShowError(
+                "Este libro ya está prestado a otro estudiante.");
             return;
         }
 
-        bool creado = await prestamoService.Guardar(Prestamo);
-        if (creado)
+        var resultado = await prestamoService.Guardar(Prestamo);
+
+        resultado.OnSuccess(() =>
         {
-            toastService.ShowSuccess("Prestamo guardado correctamente");
+            toastService.ShowSuccess(
+                "Préstamo guardado correctamente");
+
             Navigation.NavigateTo("/prestamos");
-        }
-        else
+        });
+
+        resultado.OnFailure(() =>
         {
-            toastService.ShowError("No se pudo guardar correctamente");
-        }
+            toastService.ShowError(
+                "No se pudo guardar el préstamo.");
+        });
 
     }
 }

@@ -82,42 +82,91 @@
     [Parameter]
     public int PrestamoId { get; set; }
 
-    private PrestamoLibro Prestamo { get; set; } = new();
-    public List<Estudiantes> ListaEstudiantes { get; set; } = new();
-    public List<Libros> ListaLibros { get; set; } = new();
+    private PrestamoLibro Prestamo { get; set; } = new PrestamoLibro();
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
+    public List<Libros> ListaLibros { get; set; } = new List<Libros>();
 
 
     protected override async Task OnInitializedAsync()
     {
-        Prestamo = await prestamoService.Buscar(PrestamoId);
-        ListaEstudiantes = await estudiantesService.GetList(e => e.EstudianteId > 0);
-        ListaLibros = await librosService.GetList(l => l.LibroId > 0);
+        var prestamoResult = await prestamoService.Buscar(PrestamoId);
+
+        prestamoResult.OnSuccess(resultado =>
+        {
+            if (resultado != null)
+            {
+                Prestamo = resultado;
+            }
+        });
+
+        prestamoResult.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo encontrar el préstamo.");
+        });
+
+        var estudiantesResult =
+            await estudiantesService.GetList(e => e.EstudianteId > 0);
+
+        estudiantesResult.OnSuccess(lista =>
+        {
+            ListaEstudiantes = lista;
+        });
+
+        estudiantesResult.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudieron cargar los estudiantes.");
+        });
+
+        var librosResult =
+            await librosService.GetList(l => l.LibroId > 0);
+
+        librosResult.OnSuccess(lista =>
+        {
+            ListaLibros = lista;
+        });
+
+        librosResult.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudieron cargar los libros.");
+        });
     }
 
     private async Task Modificar()
     {
-        if (await prestamoService.EstudianteTienePrestamo(Prestamo!.EstudianteId, Prestamo.PrestamoId))
+        if (Prestamo == null)
+            return;
+
+        if (await prestamoService.EstudianteTienePrestamo(
+            Prestamo.EstudianteId, Prestamo.PrestamoId))
         {
-            toastService.ShowError("Este estudiante ya tiene un prestamo activo.");
+            toastService.ShowError(
+                "Este estudiante ya tiene un préstamo activo.");
             return;
         }
 
-        if (await prestamoService.LibroEstaPrestado(Prestamo.LibroId, Prestamo.PrestamoId))
+        if (await prestamoService.LibroEstaPrestado(
+            Prestamo.LibroId, Prestamo.PrestamoId))
         {
-            toastService.ShowError(" Ese libro ya esta prestado.");
+            toastService.ShowError("Ese libro ya está prestado.");
             return;
         }
-        bool modificado = await prestamoService.Guardar(Prestamo);
 
-        if (modificado)
+        var resultado = await prestamoService.Guardar(Prestamo);
+
+        resultado.OnSuccess(() =>
         {
-            toastService.ShowSuccess("se ha modificado correctamente el prestamo.");
+            toastService.ShowSuccess(
+                "Se ha modificado correctamente el préstamo.");
+
             Navigation.NavigateTo("/prestamos");
-        }
-        else
+        });
+
+        resultado.OnFailure(() =>
         {
-            toastService.ShowError("No se ha podido modificar el prestamo de manera sastifactoria.");
-        }
+            toastService.ShowError(
+                "No se ha podido modificar el préstamo.");
+        });
+    }
     }
 
     private async Task ConfirmarEliminar()

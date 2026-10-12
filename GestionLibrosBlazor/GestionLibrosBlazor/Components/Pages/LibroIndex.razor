@@ -1,7 +1,9 @@
 ﻿@page "/libros"
+@using System.Linq.Expressions
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 @inject LibrosService service
+@inject ToastService toastService
 
 
 <PageTitle>Index</PageTitle>
@@ -80,13 +82,26 @@
 </div>
 
 @code {
-    public List<Libros> ListaLibros { get; set; } = new();
+    public List<Libros> ListaLibros { get; set; } = new List<Libros>();
     private string Filtro { get; set; } = string.Empty;
     private string ValorFiltro { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        ListaLibros = await service.GetList(l => true);
+        await CargarLibros(l => true);
+    }
+
+    private async Task CargarLibros(Expression<Func<Libros, bool>> criterio)
+    {
+        var resultado = await service.GetList(criterio);
+        resultado.OnSuccess(Lista =>
+        {
+            ListaLibros = Lista;
+        });
+        resultado.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudieron cargar los libros");
+        });
     }
 
     private async Task Buscar()
@@ -95,19 +110,11 @@
 
         if(Filtro == "Titulo")
         {
-            ListaLibros = await service.GetList(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+            await CargarLibros(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
         }
         else if(Filtro == "Autor")
         {
-            ListaLibros = await service.GetList(l => l.Autor.ToLower().Contains(ValorFiltro.ToLower()));
+            await CargarLibros(l => l.Autor.ToLower().Contains(ValorFiltro.ToLower()));
         }
-    }
-
-    private async Task Restablecer()
-    {
-        ListaLibros = await service.GetList(l => true);
-        Filtro = string.Empty;
-        ValorFiltro = string.Empty;
-        
     }
 }

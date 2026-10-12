@@ -2,6 +2,7 @@
 
 @inject LibrosService Service
 @inject NavigationManager Navigation
+@inject ToastService toastService
 
 <PageTitle>Delete</PageTitle>
 <div class="container">
@@ -38,15 +39,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        libro = await Service.Buscar(LibroId);
+        var buscar = await Service.Buscar(LibroId);
+        buscar.OnSuccess(resultado =>
+        {
+            if (resultado != null)
+            {
+                libro = resultado;
+            }
+        });
+        buscar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo encontrar el libro");
+        });
     }
 
     private async Task Eliminar()
     {
         var eliminado = await Service.Eliminar(libro.LibroId);
-        if (eliminado)
+        eliminado.OnSuccess(() =>
         {
-            Navigation.NavigateTo("/libros");
-        }
+            Navigation.NavigateTo("/libros");   
+        });
+        eliminado.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo eliminar el libro");
+        });
     }
 }
