@@ -1,0 +1,81 @@
+﻿@page "/devoluciones/create/{PrestamoId:int}"
+@rendermode InteractiveServer
+@inject PrestamoService prestamoService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle>Devolucion</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h5 class="card-title">Registrar Devolución</h5>
+        </div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Estudiante</strong></label>
+                <input class="form-control" value="@Prestamo.Estudiantes.Nombres" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Libro</strong></label>
+                <input class="form-control" value="@Prestamo.Libros.Titulo" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Fecha del préstamo</strong></label>
+                <input class="form-control" value="@Prestamo.FechaPrestamo.ToString("dd/MM/yyyy")" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Fecha de devolución</strong></label>
+                <InputDate class="form-control" @bind-Value="Fecha"></InputDate>
+            </div>
+        </div>
+
+        <div class="card-footer text-center">
+            <a href="/prestamos" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
+            <button type="button" class="btn btn-primary bi bi-floppy" @onclick="Guardar"> Guardar</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int PrestamoId{ get; set; }
+
+    private PrestamoLibro? Prestamo { get; set; }
+    private DateTime Fecha { get; set; } = DateTime.Today;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Prestamo = await prestamoService.Buscar(PrestamoId);
+        if(Prestamo == null || Prestamo.FechaDevolucion != null)
+        {
+            navigationManager.NavigateTo("/prestamos");
+        }
+    }
+
+    private async Task Guardar()
+    {
+        if(Fecha < Prestamo.FechaPrestamo)
+        {
+            toastService.ShowError("La devolucion no puede ser anterior al prestamo");
+            return;
+        }
+
+        bool guardado = await prestamoService.RegistrarDevolucion(PrestamoId, Fecha);
+        if (guardado)
+        {
+            toastService.ShowSuccess("Devolucion registrada correctamente");
+            navigationManager.NavigateTo("/prestamos");
+        }
+        else
+        {
+            toastService.ShowError("No se ha podido registra la devolucion");
+        }
+    }
+
+}
