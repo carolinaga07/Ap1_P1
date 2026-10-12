@@ -106,11 +106,11 @@ namespace GestionLibrosBlazor.Migrations
                     b.Property<int>("EstudianteId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("FechaDevolucion")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("FechaDevolucion")
+                        .HasColumnType("date");
 
-                    b.Property<DateTime>("FechaPrestamo")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("FechaPrestamo")
+                        .HasColumnType("date");
 
                     b.Property<int>("LibroId")
                         .HasColumnType("int");
