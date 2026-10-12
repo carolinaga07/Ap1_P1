@@ -17,6 +17,9 @@ namespace GestionLibrosBlazor.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public int AnioPublicacion { get; set; }
 
+        [Range(0,int.MaxValue,ErrorMessage ="La cantidad no puede ser negativa.")]
+        public int Cantidad { get; set; }
+
         [InverseProperty("Libros")]
         public virtual PrestamoLibro? Prestamo { get; set; }
     }
