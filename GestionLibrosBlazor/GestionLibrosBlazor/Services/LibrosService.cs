@@ -7,22 +7,24 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GestionLibrosBlazor.Services;
 
-    public class LibrosService(IDbContextFactory<Contexto> contextFactory
-        ) : Aplicada1.Core.IService<Libros, int>
+    public class LibrosService(
+        IDbContextFactory<Contexto> contextFactory
+        ) : Aplicada1.Core.IServiceResult<Libros, int>
     { 
-        public async Task<bool> Guardar(Libros libros)
+        public async Task<Result> Guardar(Libros libros)
         {
-            await using var contexto = await contextFactory.CreateDbContextAsync();
 
-            if (libros.LibroId == 0)
+            if (!await Existe(libros.LibroId))
             {
-                contexto.Libros.Add(libros);
+                var insertar = await Insertar(libros);
+                return Result.Success(insertar);
             }
             else
             {
-                contexto.Update(libros);
+                var modificar = await Modificar(libros);
+                return Result.Success(modificar);
             }
-            return await contexto.SaveChangesAsync() > 0;
+           
         }
 
         private async Task<bool> Existe (int libroId)
@@ -46,27 +48,27 @@ namespace GestionLibrosBlazor.Services;
             return await contexto.SaveChangesAsync() > 0;
         }
 
-        public async Task <Libros?> Buscar(int libroId)
+        public async Task <Result<Libros?>> Buscar(int libroId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
+           
             return await contexto.Libros
                 .AsNoTracking()
                 .FirstOrDefaultAsync(l => l.LibroId == libroId);
         }
 
-        public async Task<bool> Eliminar(int libroId)
+        public async Task<Result> Eliminar(int libroId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
-            var libro = await contexto.Libros.FindAsync(libroId);
-            if (libro == null)
-            {
-                return false;
-            }
-            contexto.Libros.Remove(libro);
-            return await contexto.SaveChangesAsync() > 0;
+
+            var eliminado = await contexto.Libros
+            .Where(l => l.LibroId == libroId)
+            .ExecuteDeleteAsync() > 0;
+
+            return Result.Success(eliminado);
         }
 
-        public async Task<List<Libros>> GetList(Expression<Func<Libros, bool>> criterio)
+        public async Task<Result<List<Libros>>> GetList(Expression<Func<Libros, bool>> criterio)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Libros
@@ -75,7 +77,7 @@ namespace GestionLibrosBlazor.Services;
                 .ToListAsync();
         }
 
-        public async Task <bool> ExisteTitulo(string titulo, int libroId = 0)
+        public async Task <Result<bool>> ExisteTitulo(string titulo, int libroId = 0)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Libros

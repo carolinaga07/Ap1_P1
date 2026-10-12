@@ -1,4 +1,5 @@
 ﻿@page "/prestamos"
+@using System.Linq.Expressions
 @inject PrestamoService PrestamoService
 @inject ToastService toastService
 
@@ -66,39 +67,53 @@
 </div>
 
 @code {
-    public List<PrestamoLibro> ListaPrestamos { get; set; } = new();
+    [Parameter]
+    public int PrestamoId{ get; set; }
+    public List<PrestamoLibro> ListaPrestamos { get; set; } = new List<PrestamoLibro>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
     public PrestamoLibro? PrestamoAEliminar { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+        await CargarPrestamos(p => p.PrestamoId > 0);
+    }
+
+    private async Task CargarPrestamos(Expression<Func<PrestamoLibro, bool>> criterio)
+    {
+        var resultado = await PrestamoService.GetList(criterio);
+
+        resultado.OnSuccess(lista =>
+        {
+            ListaPrestamos = lista;
+        });
+
+        resultado.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudieron cargar los prestamos.");
+        });
     }
 
     private async Task Buscar()
     {
         if(ValorFiltro.Trim() == "")
         {
-            ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
+            await CargarPrestamos(p => p.PrestamoId > 0);
             return;
         }
 
         if(Filtro == "Estudiante")
         {
-            ListaPrestamos = await PrestamoService.GetList(p => p.Estudiantes.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+            await CargarPrestamos(p =>
+             p.Estudiantes.Nombres.ToLower()
+             .Contains(ValorFiltro.ToLower()));
         }
         else if(Filtro == "Libro")
         {
-            ListaPrestamos = await PrestamoService.GetList(p => p.Libros.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+            await CargarPrestamos(p =>
+             p.Libros.Titulo.ToLower()
+             .Contains(ValorFiltro.ToLower()));
         }
-    }
-
-    private async Task Restablecer()
-    {
-        ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
-        Filtro = string.Empty;
-        ValorFiltro = string.Empty;
     }
 
     private void MostrarModal(PrestamoLibro prestamoLibro)
@@ -113,16 +128,24 @@
             return;
         }
 
-        bool eliminado = await PrestamoService.Eliminar(PrestamoAEliminar.PrestamoId);
-        if (eliminado)
+        var resultado =
+           await PrestamoService.Eliminar(PrestamoAEliminar.PrestamoId);
+
+        resultado.OnSuccess(async () =>
         {
-            toastService.ShowSuccess("Prestamo eliminado correctamente.");
-            ListaPrestamos = await PrestamoService.GetList(p => p.PrestamoId > 0);
-        }
-        else
+            toastService.ShowSuccess(
+                "Préstamo eliminado correctamente.");
+
+            PrestamoAEliminar = null;
+
+            await CargarPrestamos(p => p.PrestamoId > 0);
+        });
+
+        resultado.OnFailure(() =>
         {
-            toastService.ShowError("no se pudo eliminar el prestamo");
-        }
-        PrestamoAEliminar = null; 
+            toastService.ShowError(
+                "No se pudo eliminar el préstamo.");
+        });
+    }
     }
 }

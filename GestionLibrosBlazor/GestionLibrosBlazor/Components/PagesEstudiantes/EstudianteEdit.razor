@@ -59,24 +59,52 @@
 
     protected override async Task OnInitializedAsync()
     {
-        estudiante = await Service.Buscar(EstudianteId);
+        var buscar = await Service.Buscar(EstudianteId);
+        buscar.OnSuccess(resultado =>
+        {
+            if (resultado != null)
+            {
+                estudiante = resultado;
+            }
+        });
+        buscar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo encontrar el estudiante");
+        });
     }
 
     private async Task Modificar()
     {
-        if (await Service.ExisteNombre(estudiante!.Nombres!, EstudianteId))
+        var nombre = await Service.ExisteNombre(estudiante.Nombres, EstudianteId);
+        bool existe = false;
+        bool verificacion = false;
+
+        nombre.OnSuccess(resultado =>
         {
-            toastService.ShowError("Ya existe un estudiante con ese nombre.");
+            existe = resultado;
+            verificacion = true;
+        });
+        nombre.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo verificar el nombre");
+        });
+        if(!verificacion){ return; }
+
+        if (existe)
+        {
+            toastService.ShowError("ya existe un estudiante con ese nombre");
             return;
         }
+        var modificar = await Service.Guardar(estudiante);
 
-        bool exito = await Service.Guardar(estudiante!);
-        if (exito)
+        modificar.OnSuccess(() =>
         {
             toastService.ShowSuccess("Estudiante actualizado correctamente");
-
-            await Task.Delay(1500);
             Navigation.NavigateTo("/estudiantes");
-        }
+        });
+        modificar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo actualizar el estudiante");
+        });
     }
 }

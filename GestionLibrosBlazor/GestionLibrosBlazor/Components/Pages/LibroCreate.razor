@@ -54,17 +54,29 @@
 
     private async Task Guardar()
     {
-        if(await Service.ExisteTitulo(libro.Titulo!))
+        var tituloResult = await Service.ExisteTitulo(libro.Titulo);
+        bool existe = false;
+
+        tituloResult.OnSuccess(resultado => existe = resultado);
+        tituloResult.OnFailure(() =>
         {
-            toastService.ShowError("Ya existe un libro con ese titulo.");
+            toastService.ShowError("No se pudo verificar el titulo.");
+        });
+        if (existe)
+        {
+            toastService.ShowError("Ya existe un libro con ese titulo");
             return;
         }
-        bool exito = await Service.Guardar(libro);
-        if (exito)
+        var guardar = await Service.Guardar(libro);
+        guardar.OnSuccess(() =>
         {
-            toastService.ShowSuccess("Libro guardado correctamente.");
+            toastService.ShowSuccess("Libro guardado correctamente");
             Navigation.NavigateTo("/libros");
-        }
+        });
+        guardar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo guardar el libro.");
+        });
 
     }
 
