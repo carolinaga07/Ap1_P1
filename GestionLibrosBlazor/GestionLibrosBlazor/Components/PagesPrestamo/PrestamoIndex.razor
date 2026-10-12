@@ -1,4 +1,5 @@
 ﻿@page "/prestamos"
+@using Microsoft.AspNetCore.Components.Rendering
 @inject PrestamoService PrestamoService
 @inject ToastService toastService
 
@@ -29,7 +30,8 @@
                     <PropertyColumn Property="p => p.PrestamoId" Title="PrestamoId" Sortable="true" />
                     <PropertyColumn Property="p => p.Estudiantes.Nombres" Title="Estudiante" Sortable="true" />
                     <PropertyColumn Property="p => p.Libros.Titulo" Title="Libro" Sortable="true" />
-                    <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha" Sortable="true" />
+                    <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha Prestamo" Sortable="true" />
+                    <PropertyColumn Property="p => p.FechaDevolucion" Title="Fecha Devolucion" Sortable="true" />
                     <TemplateColumn Title="Opciones">
                         <a href="/prestamos/edit/@context.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                         @if (context.FechaDevolucion == null)
@@ -42,6 +44,7 @@
         </div>
         <div class="card-footer">
             <label>Cantidad: @ListaPrestamos.Count()</label>
+            <label>Promedio de dias prestados: @PromedioDias.ToString("N1")</label>
         </div>
     </div>
 </div>
@@ -74,4 +77,10 @@
             ListaPrestamos = await PrestamoService.GetList(p => p.Libros.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
         }
     }
+
+    private double PromedioDias => ListaPrestamos.Any(p => p.FechaDevolucion != null) ? ListaPrestamos
+    .Where(p => p.FechaDevolucion != null)
+    .Average(p => (p.FechaDevolucion.Value - p.FechaPrestamo).TotalDays) : 0;
+
+    
 }
