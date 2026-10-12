@@ -80,7 +80,7 @@
 
     private double PromedioDias => ListaPrestamos.Any(p => p.FechaDevolucion != null) ? ListaPrestamos
     .Where(p => p.FechaDevolucion != null)
-    .Average(p => (p.FechaDevolucion.Value - p.FechaPrestamo).TotalDays) : 0;
+    .Average(p => (p.FechaDevolucion.Value.DayNumber - p.FechaPrestamo.DayNumber)) : 0;
 
     
 }

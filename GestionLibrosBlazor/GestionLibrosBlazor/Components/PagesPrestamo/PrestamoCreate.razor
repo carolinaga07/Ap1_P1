@@ -65,7 +65,7 @@
     {
         ListaEstudiantes = await estudiantesService.GetList(e => e.EstudianteId > 0);
         ListaLibros = await librosService.GetList(l => l.LibroId > 0);
-        Prestamo.FechaPrestamo = DateTime.Today;
+        Prestamo.FechaPrestamo = DateOnly.FromDateTime(DateTime.Today);
     }
 
     private async Task Guardar()

@@ -53,6 +53,7 @@
 
 @code {
     [Parameter]
+    
     public int PrestamoId { get; set; }
 
     private PrestamoLibro Prestamo { get; set; } = new();
@@ -68,7 +69,7 @@
         }
 
         Prestamo = prestamo;
-        Prestamo.FechaDevolucion = DateTime.Today;
+        Prestamo.FechaDevolucion = DateOnly.FromDateTime(DateTime.Today);
     }
 
     private async Task Guardar()
@@ -85,7 +86,10 @@
             return;
         }
 
-        bool exito = await prestamoService.RegistrarDevolucion(Prestamo.PrestamoId, Prestamo.FechaDevolucion.Value);
+        bool exito = await prestamoService.RegistrarDevolucion(
+            Prestamo.PrestamoId,
+            Prestamo.FechaDevolucion.Value
+        );
 
         if (exito)
         {
