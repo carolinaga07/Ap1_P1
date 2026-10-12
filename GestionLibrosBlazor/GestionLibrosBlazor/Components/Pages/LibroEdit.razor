@@ -50,28 +50,53 @@
     [Parameter]
     public int LibroId{ get; set; }
 
-    private Libros libro = new();
+    private Libros libro = new Libros();
 
     protected override async Task OnInitializedAsync()
     {
-        libro = await Service.Buscar(LibroId);
+        var buscar = await Service.Buscar(LibroId);
+        buscar.OnSuccess(resultado =>
+        {
+            if(resultado != null)
+            {
+                libro = resultado;
+            }   
+        });
+
+        buscar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo encontrar el libro");
+        });
     }
 
     private async Task Modificar()
     {
-        if (await Service.ExisteTitulo(libro!.Titulo!, LibroId))
+        var titulo = await Service.ExisteTitulo(libro.Titulo, LibroId);
+        bool existe = false;
+        titulo.OnSuccess(resultado =>
         {
-            toastService.ShowError("Ya existe un libro con ese titulo.");
+            existe = resultado;
+        });
+        titulo.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo verificar el titulo");
+        });
+
+        if (existe)
+        {
+            toastService.ShowError("Ya existe un libro con ese titulo");
             return;
         }
 
-        bool exito = await Service.Guardar(libro!);
-        if (exito)
+        var modificar = await Service.Guardar(libro);
+        modificar.OnSuccess(() =>
         {
             toastService.ShowSuccess("Libro actualizado correctamente");
-
-            await Task.Delay(1500);
             Navigation.NavigateTo("/libros");
-        }
+        });
+        modificar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo actualizar el libro");
+        });
     }
 }

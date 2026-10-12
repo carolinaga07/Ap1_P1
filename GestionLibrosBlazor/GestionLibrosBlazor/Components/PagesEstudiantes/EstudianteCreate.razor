@@ -55,20 +55,40 @@
 </EditForm>
 
 @code{
-    private Estudiantes estudiante = new();
-   
+    private Estudiantes estudiante = new Estudiantes();
+
     private async Task Guardar()
     {
-        if(await Service.ExisteNombre(estudiante.Nombres!))
+        var nombre = await Service.ExisteNombre(estudiante.Nombres);
+        bool existe = false;
+        bool verificacion = false;
+        nombre.OnSuccess(resultado =>
         {
-            toastService.ShowError("Ya existe un estudiante con ese nombre.");
+            existe = resultado;
+            verificacion = true;
+        });
+        nombre.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo verificar el nombre");
+        });
+        if (!verificacion)
+        {
             return;
         }
-        bool exito = await Service.Guardar(estudiante);
-        if (exito)
+        if (existe)
         {
-            toastService.ShowSuccess("Estudiante guardado correctamente.");
-            Navigation.NavigateTo("/estudiantes");
+            toastService.ShowError("Ya existe un estudiante con ese nombre");
+            return;
         }
+        var guardar = await Service.Guardar(estudiante);
+        guardar.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Estudiante guardado correctamente");
+            Navigation.NavigateTo("/estudiantes");
+        });
+        guardar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo guardar el estudiante");
+        });
     }
 }

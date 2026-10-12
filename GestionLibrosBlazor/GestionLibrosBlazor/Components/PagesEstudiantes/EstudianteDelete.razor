@@ -2,6 +2,7 @@
 
 @inject EstudiantesService Service
 @inject NavigationManager Navigation
+@inject ToastService toastService
 
 <PageTitle>Delete</PageTitle>
 <div class="container">
@@ -41,15 +42,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        estudiante = await Service.Buscar(EstudianteId);
+        var buscar = await Service.Buscar(EstudianteId);
+        buscar.OnSuccess(resultado =>
+        {
+            if (resultado != null)
+            {
+                estudiante = resultado;
+            }
+        });
+        buscar.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo encontrar el estudiante");
+        });
     }
 
     private async Task Eliminar()
     {
         var eliminado = await Service.Eliminar(estudiante.EstudianteId);
-        if (eliminado)
+        eliminado.OnSuccess(() =>
         {
             Navigation.NavigateTo("/estudiantes");
-        }
+        });
+        eliminado.OnFailure(() =>
+        {
+            toastService.ShowError("No se pudo eliminar el estudiante");
+        });
     }
 }

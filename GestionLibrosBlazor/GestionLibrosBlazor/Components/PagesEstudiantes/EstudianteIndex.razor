@@ -1,7 +1,9 @@
 ﻿@page "/estudiantes"
+@using System.Linq.Expressions
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 @inject EstudiantesService service
+@inject ToastService toastService
 
 
 <PageTitle>Index</PageTitle>
@@ -82,13 +84,26 @@
 </div>
 
 @code {
-    public List<Estudiantes> ListaEstudiantes { get; set; } = new();
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
     private string Filtro { get; set; } = string.Empty;
     private string ValorFiltro { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        ListaEstudiantes = await service.GetList(e => true);
+        await CargarEstudiantes(e => true);
+    }
+
+    private async Task CargarEstudiantes(Expression<Func<Estudiantes, bool>> criterio)
+    {
+        var resultado = await service.GetList(criterio);
+        resultado.OnSuccess(lista =>
+        {
+            ListaEstudiantes = lista;
+        });
+        resultado.OnFailure(() =>
+        {
+            toastService.ShowError("No se pueden cargar los estudiantes");
+        });
     }
 
     private async Task Buscar()
@@ -97,19 +112,11 @@
 
         if (Filtro == "Nombres")
         {
-            ListaEstudiantes = await service.GetList(e => e.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+            await CargarEstudiantes(e => e.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
         }
         else if (Filtro == "Id del estudiante")
         {
-            ListaEstudiantes = await service.GetList(e => e.Email.ToLower().Contains(ValorFiltro.ToLower()));
+            await CargarEstudiantes(e => e.Email.ToLower().Contains(ValorFiltro.ToLower()));
         }
-    }
-
-    private async Task Restablecer()
-    {
-        ListaEstudiantes = await service.GetList(e => true);
-        Filtro = string.Empty;
-        ValorFiltro = string.Empty;
-
     }
 }
