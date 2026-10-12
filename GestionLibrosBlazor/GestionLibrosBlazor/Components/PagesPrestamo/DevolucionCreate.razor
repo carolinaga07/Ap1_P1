@@ -1,81 +1,100 @@
 ﻿@page "/devoluciones/create/{PrestamoId:int}"
 @rendermode InteractiveServer
 @inject PrestamoService prestamoService
-@inject NavigationManager navigationManager
+@inject NavigationManager Navigation
 @inject ToastService toastService
 
-<PageTitle>Devolucion</PageTitle>
+<PageTitle>Registrar Devolución</PageTitle>
+<EditForm Model="Prestamo" OnValidSubmit="Guardar" FormName="crearDevolucion">
+    <DataAnnotationsValidator />
 
-<div class="container">
-    <div class="card shadow-lg">
-        <div class="card-header text-center">
-            <h5 class="card-title">Registrar Devolución</h5>
-        </div>
-        <div class="card-body">
-
-            <div class="mb-3">
-                <label class="form-label"><strong>Estudiante</strong></label>
-                <input class="form-control" value="@Prestamo.Estudiantes.Nombres" disabled />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Registrar Devolución</h5>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label"><strong>Libro</strong></label>
-                <input class="form-control" value="@Prestamo.Libros.Titulo" disabled />
+            <div class="card-body">
+                @*Id*@
+                <div class="mb-3">
+                    <label class="form-label">PrestamoId</label>
+                    <InputNumber class="form-control" @bind-Value="Prestamo.PrestamoId" readonly></InputNumber>
+                </div>
+                @*Estudiante*@
+                <div class="mb-3">
+                    <label class="form-label">Estudiante</label>
+                    <input class="form-control" value="@Prestamo.Estudiantes?.Nombres" readonly />
+                </div>
+                @*Libro*@
+                <div class="mb-3">
+                    <label class="form-label">Libro</label>
+                    <input class="form-control" value="@Prestamo.Libros?.Titulo" readonly />
+                </div>
+                @*Fecha del prestamo*@
+                <div class="mb-3">
+                    <label class="form-label">Fecha del préstamo</label>
+                    <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo" readonly></InputDate>
+                </div>
+                @*Fecha de devolucion*@
+                <div class="mb-3">
+                    <label class="form-label">Fecha de devolución</label>
+                    <InputDate class="form-control" @bind-Value="Prestamo.FechaDevolucion"></InputDate>
+                    <ValidationMessage For="@(() => Prestamo.FechaDevolucion)" />
+                </div>
+                @*Footer*@
+                <div class="card-footer text-center mt-2">
+                    <a href="/prestamos" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
+                    <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label"><strong>Fecha del préstamo</strong></label>
-                <input class="form-control" value="@Prestamo.FechaPrestamo.ToString("dd/MM/yyyy")" disabled />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label"><strong>Fecha de devolución</strong></label>
-                <InputDate class="form-control" @bind-Value="Fecha"></InputDate>
-            </div>
-        </div>
-
-        <div class="card-footer text-center">
-            <a href="/prestamos" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
-            <button type="button" class="btn btn-primary bi bi-floppy" @onclick="Guardar"> Guardar</button>
         </div>
     </div>
-</div>
-
+</EditForm>
 
 @code {
     [Parameter]
-    public int PrestamoId{ get; set; }
+    public int PrestamoId { get; set; }
 
-    private PrestamoLibro? Prestamo { get; set; }
-    private DateTime Fecha { get; set; } = DateTime.Today;
+    private PrestamoLibro Prestamo { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        Prestamo = await prestamoService.Buscar(PrestamoId);
-        if(Prestamo == null || Prestamo.FechaDevolucion != null)
+        var prestamo = await prestamoService.Buscar(PrestamoId);
+
+        if (prestamo == null || prestamo.FechaDevolucion != null)
         {
-            navigationManager.NavigateTo("/prestamos");
+            Navigation.NavigateTo("/prestamos");
+            return;
         }
+
+        Prestamo = prestamo;
+        Prestamo.FechaDevolucion = DateTime.Today;
     }
 
     private async Task Guardar()
     {
-        if(Fecha < Prestamo.FechaPrestamo)
+        if (Prestamo.FechaDevolucion == null)
         {
-            toastService.ShowError("La devolucion no puede ser anterior al prestamo");
+            toastService.ShowError("La fecha de devolución es requerida.");
             return;
         }
 
-        bool guardado = await prestamoService.RegistrarDevolucion(PrestamoId, Fecha);
-        if (guardado)
+        if (Prestamo.FechaDevolucion < Prestamo.FechaPrestamo)
         {
-            toastService.ShowSuccess("Devolucion registrada correctamente");
-            navigationManager.NavigateTo("/prestamos");
+            toastService.ShowError("La devolución no puede ser anterior al préstamo.");
+            return;
+        }
+
+        bool exito = await prestamoService.RegistrarDevolucion(Prestamo.PrestamoId, Prestamo.FechaDevolucion.Value);
+
+        if (exito)
+        {
+            toastService.ShowSuccess("Devolución registrada correctamente.");
+            Navigation.NavigateTo("/prestamos");
         }
         else
         {
-            toastService.ShowError("No se ha podido registra la devolucion");
+            toastService.ShowError("No se ha podido registrar la devolución.");
         }
     }
-
 }
