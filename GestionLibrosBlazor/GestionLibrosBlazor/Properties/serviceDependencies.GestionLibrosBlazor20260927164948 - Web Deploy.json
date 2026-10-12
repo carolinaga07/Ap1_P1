@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('serviceConnectorResourceGroupName')]/providers/Microsoft.Web/sites/GestionLibrosBlazor20260927164948/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsConStr1_390B27B1BC",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/ap1-sqlserver-carolinag/databases/free-sql-db-6278004",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:ConStr1",
+      "dynamicId": null
+    }
+  }
+}
