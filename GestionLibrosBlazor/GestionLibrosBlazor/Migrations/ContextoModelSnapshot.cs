@@ -65,6 +65,9 @@ namespace GestionLibrosBlazor.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -79,6 +82,7 @@ namespace GestionLibrosBlazor.Migrations
                             LibroId = 1,
                             AnioPublicacion = 1950,
                             Autor = "C.S Lewis",
+                            Cantidad = 0,
                             Titulo = "Cronicas de Narnia"
                         },
                         new
@@ -86,6 +90,7 @@ namespace GestionLibrosBlazor.Migrations
                             LibroId = 2,
                             AnioPublicacion = 1999,
                             Autor = "Stephen Chbosky",
+                            Cantidad = 0,
                             Titulo = "The perks of being a wallflower"
                         });
                 });
@@ -101,6 +106,9 @@ namespace GestionLibrosBlazor.Migrations
                     b.Property<int>("EstudianteId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("FechaDevolucion")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("FechaPrestamo")
                         .HasColumnType("datetime2");
 
@@ -109,11 +117,9 @@ namespace GestionLibrosBlazor.Migrations
 
                     b.HasKey("PrestamoId");
 
-                    b.HasIndex("EstudianteId")
-                        .IsUnique();
+                    b.HasIndex("EstudianteId");
 
-                    b.HasIndex("LibroId")
-                        .IsUnique();
+                    b.HasIndex("LibroId");
 
                     b.ToTable("Prestamos");
                 });
@@ -121,14 +127,14 @@ namespace GestionLibrosBlazor.Migrations
             modelBuilder.Entity("GestionLibrosBlazor.Models.PrestamoLibro", b =>
                 {
                     b.HasOne("GestionLibrosBlazor.Models.Estudiantes", "Estudiantes")
-                        .WithOne("Prestamo")
-                        .HasForeignKey("GestionLibrosBlazor.Models.PrestamoLibro", "EstudianteId")
+                        .WithMany("Prestamo")
+                        .HasForeignKey("EstudianteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GestionLibrosBlazor.Models.Libros", "Libros")
-                        .WithOne("Prestamo")
-                        .HasForeignKey("GestionLibrosBlazor.Models.PrestamoLibro", "LibroId")
+                        .WithMany("Prestamo")
+                        .HasForeignKey("LibroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
