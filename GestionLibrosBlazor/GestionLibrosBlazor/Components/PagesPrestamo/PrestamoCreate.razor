@@ -63,33 +63,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var estudiantesResult =
-            await estudiantesService.GetList(e => e.EstudianteId > 0);
-
-        estudiantesResult.OnSuccess(lista =>
-        {
-            ListaEstudiantes = lista;
-        });
-
-        estudiantesResult.OnFailure(() =>
-        {
-            toastService.ShowError("No se pudieron cargar los estudiantes.");
-        });
-
-        var librosResult =
-            await librosService.GetList(l => l.LibroId > 0);
-
-        librosResult.OnSuccess(lista =>
-        {
-            ListaLibros = lista;
-        });
-
-        librosResult.OnFailure(() =>
-        {
-            toastService.ShowError("No se pudieron cargar los libros.");
-        });
-
-        Prestamo.FechaPrestamo = DateTime.Today;
+        ListaEstudiantes = await estudiantesService.GetList(e => e.EstudianteId > 0);
+        ListaLibros = await librosService.GetList(l => l.LibroId > 0);
+        Prestamo.FechaPrestamo = DateOnly.FromDateTime(DateTime.Today);
     }
 
     private async Task Guardar()

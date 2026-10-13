@@ -9,7 +9,8 @@ namespace GestionLibrosBlazor.Models
         public int PrestamoId { get; set; }
 
         [Required(ErrorMessage ="Este campo es requerido")]
-        public DateTime FechaPrestamo { get; set; }
+        public DateOnly FechaPrestamo { get; set; }
+        public DateOnly? FechaDevolucion { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage =" Debe seleccionar un estudiante valido")]
         public int EstudianteId { get; set; }

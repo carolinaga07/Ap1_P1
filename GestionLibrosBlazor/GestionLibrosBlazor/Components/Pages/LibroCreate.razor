@@ -20,8 +20,7 @@
                     <label class="form-label">LibroId</label>
                     <InputNumber  class="form-control" @bind-Value="libro.LibroId" readonly > </InputNumber>
                 </div>
-               
-               
+     
                <div class="mb-3">
                     <label class="form-label">Titulo</label>
                     <InputText class="form-control" @bind-Value="libro.Titulo" />
@@ -36,6 +35,7 @@
                     <label class="form-label">Año</label>
                     <InputNumber class="form-control" @bind-Value="libro.AnioPublicacion" ></InputNumber>
                 </div>
+                
                 <div class="card-footer text-center mt-2">
                     <a href="/libros" class="btn btn-secondary"><span class="bi bi-arrow-left"></span>Volver</a>
                     <button type="submit" class="btn btn-primary bi bi-floopy">Guardar</button>
@@ -49,7 +49,7 @@
 
 @code{
 
-    private Libros libro = new();
+    private Libros libro = new ();
     private string mensajeError = "";
 
     private async Task Guardar()

@@ -1,5 +1,5 @@
 ﻿@page "/prestamos"
-@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Rendering
 @inject PrestamoService PrestamoService
 @inject ToastService toastService
 
@@ -30,38 +30,21 @@
                     <PropertyColumn Property="p => p.PrestamoId" Title="PrestamoId" Sortable="true" />
                     <PropertyColumn Property="p => p.Estudiantes.Nombres" Title="Estudiante" Sortable="true" />
                     <PropertyColumn Property="p => p.Libros.Titulo" Title="Libro" Sortable="true" />
-                    <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha" Sortable="true" />
+                    <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha Prestamo" Sortable="true" />
+                    <PropertyColumn Property="p => p.FechaDevolucion" Title="Fecha Devolucion" Sortable="true" />
                     <TemplateColumn Title="Opciones">
                         <a href="/prestamos/edit/@context.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                        <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalEliminar"
-                        @onclick="() => MostrarModal(context)"></button>
+                        @if (context.FechaDevolucion == null)
+                        {
+                            <a href="/devoluciones/create/@context.PrestamoId" class="btn btn-outline-success bi bi-box-arrow-in-left" title="Registrar devolucion"></a>
+                        }
                     </TemplateColumn>
                 </QuickGrid>
             </div>
         </div>
-        <div class="card-footer">
+        <div class="card-footer d-flex justify-content-between">
             <label>Cantidad: @ListaPrestamos.Count()</label>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalEliminar" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminacion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                @if(PrestamoAEliminar != null)
-                {
-                    <p>Eliminar el prestamo del libro <strong>@PrestamoAEliminar.Libros.Titulo</strong> a <strong>@PrestamoAEliminar.Estudiantes.Nombres</strong>?</p>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="ConfirmarEliminar">Eliminar</button>
-            </div>
+            <label>Promedio de dias prestados: @PromedioDias.ToString("N1")</label>
         </div>
     </div>
 </div>
@@ -116,36 +99,9 @@
         }
     }
 
-    private void MostrarModal(PrestamoLibro prestamoLibro)
-    {
-        PrestamoAEliminar = prestamoLibro;
-    }
+    private double PromedioDias => ListaPrestamos.Any(p => p.FechaDevolucion != null) ? ListaPrestamos
+    .Where(p => p.FechaDevolucion != null)
+    .Average(p => (p.FechaDevolucion.Value.DayNumber - p.FechaPrestamo.DayNumber)) : 0;
 
-    private async Task ConfirmarEliminar()
-    {
-        if (PrestamoAEliminar == null)
-        {
-            return;
-        }
-
-        var resultado =
-           await PrestamoService.Eliminar(PrestamoAEliminar.PrestamoId);
-
-        resultado.OnSuccess(async () =>
-        {
-            toastService.ShowSuccess(
-                "Préstamo eliminado correctamente.");
-
-            PrestamoAEliminar = null;
-
-            await CargarPrestamos(p => p.PrestamoId > 0);
-        });
-
-        resultado.OnFailure(() =>
-        {
-            toastService.ShowError(
-                "No se pudo eliminar el préstamo.");
-        });
-    }
-    }
+    
 }

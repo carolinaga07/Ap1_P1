@@ -21,5 +21,5 @@ namespace GestionLibrosBlazor.Models;
         public DateTime FechaNacimiento { get; set; }
 
         [InverseProperty("Estudiantes")]
-        public virtual PrestamoLibro? Prestamo { get; set; }
+         public virtual ICollection<PrestamoLibro> Prestamo { get; set; } = new List<PrestamoLibro>();
     }

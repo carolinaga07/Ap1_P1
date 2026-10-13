@@ -47,7 +47,8 @@
                </div>
 
                 <div class="card-footer text-center mt-2">
-                    <a href="/estudiantes" class="btn btn-secondary"><span class="bi bi-arrow-left"></span>Volver</a>
+                    <a href="/prestamos" class="btn btn-secondary"><span class="bi bi-arrow-left"></span>Volver</a>
+                    <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalEliminar"> Eliminar</button>
                     <button type="submit" class="btn btn-primary bi bi-floppy">Guardar</button>
 
                 </div>
@@ -56,6 +57,26 @@
     </div>
 </EditForm>
 
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminacion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @if (Prestamo != null && Prestamo.Estudiantes != null)
+                {
+                    <p>Eliminar el prestamo del libro <strong>@Prestamo.Libros.Titulo</strong> a <strong>@Prestamo.Estudiantes.Nombres</strong>?</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="ConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     [Parameter]
@@ -146,5 +167,18 @@
                 "No se ha podido modificar el préstamo.");
         });
     }
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (await prestamoService.Eliminar(Prestamo.PrestamoId))
+        {
+            toastService.ShowSuccess("Prestamo eliminado correctamente.");
+            Navigation.NavigateTo("/prestamos");
+        }
+        else
+        {
+            toastService.ShowError("no se pudo eliminar el prestamo");
+        }
     }
 }

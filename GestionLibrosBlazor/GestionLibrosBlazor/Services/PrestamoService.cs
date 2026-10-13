@@ -9,6 +9,17 @@ namespace GestionLibrosBlazor.Services;
         IDbContextFactory<Contexto> contextFactory)
        : Aplicada1.Core.IServiceResult<PrestamoLibro,int>
     {
+         public async Task<bool> Guardar(PrestamoLibro prestamo)
+         {
+            if (!await Existe(prestamo.PrestamoId))
+            {
+            return await Insertar(prestamo);
+            }
+           else
+           {
+            return await Modificar(prestamo);
+           }
+         }
         private async Task<bool> Existe(int prestamoId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
@@ -30,21 +41,7 @@ namespace GestionLibrosBlazor.Services;
             return await contexto.SaveChangesAsync() > 0;
         }
 
-        public async Task<Result> Guardar(PrestamoLibro prestamo)
-        {
-            if (!await Existe(prestamo.PrestamoId))
-            {
-                var insertar = await Insertar(prestamo);
-                return Result.Success(insertar);
-            }
-            else
-            {
-            var modificar = await Modificar(prestamo);
-                return Result.Success(modificar);
-            }
-        }
-
-        public async Task<Result<PrestamoLibro?>> Buscar (int prestamoId)
+        public async Task<PrestamoLibro?> Buscar (int prestamoId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Prestamos
@@ -80,13 +77,24 @@ namespace GestionLibrosBlazor.Services;
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Prestamos
-                .AnyAsync(p => p.EstudianteId == estudianteId && p.PrestamoId != prestamoId);
+                .AnyAsync(p => p.EstudianteId == estudianteId && p.FechaDevolucion == null && p.PrestamoId!= prestamoId);
         }
 
         public async Task<bool> LibroEstaPrestado(int libroId, int prestamoId = 0)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Prestamos
-                .AnyAsync(p => p.LibroId == libroId && p.PrestamoId != prestamoId);
+                .AnyAsync(p => p.LibroId == libroId && p.FechaDevolucion == null && p.PrestamoId != prestamoId);
         }
+        
+        public async Task<bool> RegistrarDevolucion(int prestamoId, DateOnly fecha)
+        {
+        await using var contexto = await contextFactory.CreateDbContextAsync();
+        return await contexto.Prestamos
+            .Where(p => p.PrestamoId == prestamoId)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.FechaDevolucion, fecha)) > 0;
+
+        }
+
+
     }
