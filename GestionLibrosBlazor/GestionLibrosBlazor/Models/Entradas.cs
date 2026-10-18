@@ -10,8 +10,8 @@ public class Entradas
     public DateOnly Fecha { get; set; }
     public string Concepto { get; set; } = string.Empty;
     
-    [Range(1, int.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
-    public double Total { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "Debe ingresa por lo menos un libro.")]
+    public int Total { get; set; }
 
     [InverseProperty("Entrada")]
     public virtual ICollection<EntradasDetalle> EntradasDetalles { get; set; } = new List<EntradasDetalle>();
