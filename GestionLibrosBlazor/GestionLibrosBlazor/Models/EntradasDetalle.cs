@@ -14,10 +14,10 @@ public class EntradasDetalle
     public int Cantidad { get; set; }
 
     [ForeignKey("EntradaId")]
-    [InverseProperty("EntradaDetalle")]
+    [InverseProperty("EntradasDetalles")]
     public virtual Entradas Entrada { get; set; } = null;
 
     [ForeignKey("LibroId")]
-    [InverseProperty("EntradaDetalle")]
+    [InverseProperty("EntradasDetalles")]
     public virtual Libros Libro { get; set; } = null;
 }

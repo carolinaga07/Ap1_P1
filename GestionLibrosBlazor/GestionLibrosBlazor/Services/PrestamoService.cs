@@ -9,15 +9,17 @@ namespace GestionLibrosBlazor.Services;
         IDbContextFactory<Contexto> contextFactory)
        : Aplicada1.Core.IServiceResult<PrestamoLibro,int>
     {
-         public async Task<bool> Guardar(PrestamoLibro prestamo)
+         public async Task<Result> Guardar(PrestamoLibro prestamo)
          {
             if (!await Existe(prestamo.PrestamoId))
             {
-            return await Insertar(prestamo);
+              var inserta = await Insertar(prestamo);
+              return Result.Success(inserta);
             }
            else
            {
-            return await Modificar(prestamo);
+            var modifica = await Modificar(prestamo);
+            return Result.Success(modifica);
            }
          }
         private async Task<bool> Existe(int prestamoId)
@@ -41,7 +43,7 @@ namespace GestionLibrosBlazor.Services;
             return await contexto.SaveChangesAsync() > 0;
         }
 
-        public async Task<PrestamoLibro?> Buscar (int prestamoId)
+        public async Task<Result<PrestamoLibro?>> Buscar (int prestamoId)
         {
             await using var contexto = await contextFactory.CreateDbContextAsync();
             return await contexto.Prestamos

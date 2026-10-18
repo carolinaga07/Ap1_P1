@@ -1,9 +1,10 @@
 ﻿@page "/prestamos"
-@using Microsoft.AspNetCore.Components.Rendering
-@inject PrestamoService PrestamoService
+
+@inject PrestamoService prestamoService
 @inject ToastService toastService
 
 <PageTitle>Registro de Prestamos</PageTitle>
+
 <div class="container">
     <div class="card shadow-lg">
         <div class="card-header d-flex justify-content-between align-content-center mb-4">
@@ -26,6 +27,7 @@
                         <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
                     </div>
                 </div>
+
                 <QuickGrid Items="ListaPrestamos.AsQueryable()" Class="table table-hover">
                     <PropertyColumn Property="p => p.PrestamoId" Title="PrestamoId" Sortable="true" />
                     <PropertyColumn Property="p => p.Estudiantes.Nombres" Title="Estudiante" Sortable="true" />
@@ -42,6 +44,7 @@
                 </QuickGrid>
             </div>
         </div>
+
         <div class="card-footer d-flex justify-content-between">
             <label>Cantidad: @ListaPrestamos.Count()</label>
             <label>Promedio de dias prestados: @PromedioDias.ToString("N1")</label>
@@ -51,8 +54,9 @@
 
 @code {
     [Parameter]
-    public int PrestamoId{ get; set; }
-    public List<PrestamoLibro> ListaPrestamos { get; set; } = new List<PrestamoLibro>();
+    public int PrestamoId { get; set; }
+
+    public List<PrestamoLibro> ListaPrestamos { get; set; } = new();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
     public PrestamoLibro? PrestamoAEliminar { get; set; }
@@ -64,7 +68,7 @@
 
     private async Task CargarPrestamos(Expression<Func<PrestamoLibro, bool>> criterio)
     {
-        var resultado = await PrestamoService.GetList(criterio);
+        var resultado = await prestamoService.GetList(criterio);
 
         resultado.OnSuccess(lista =>
         {
@@ -79,29 +83,31 @@
 
     private async Task Buscar()
     {
-        if(ValorFiltro.Trim() == "")
+        if (ValorFiltro.Trim() == "")
         {
             await CargarPrestamos(p => p.PrestamoId > 0);
             return;
         }
 
-        if(Filtro == "Estudiante")
+        if (Filtro == "Estudiante")
         {
             await CargarPrestamos(p =>
-             p.Estudiantes.Nombres.ToLower()
-             .Contains(ValorFiltro.ToLower()));
+                p.Estudiantes.Nombres.ToLower()
+                    .Contains(ValorFiltro.ToLower()));
         }
-        else if(Filtro == "Libro")
+        else if (Filtro == "Libro")
         {
             await CargarPrestamos(p =>
-             p.Libros.Titulo.ToLower()
-             .Contains(ValorFiltro.ToLower()));
+                p.Libros.Titulo.ToLower()
+                    .Contains(ValorFiltro.ToLower()));
         }
     }
 
-    private double PromedioDias => ListaPrestamos.Any(p => p.FechaDevolucion != null) ? ListaPrestamos
-    .Where(p => p.FechaDevolucion != null)
-    .Average(p => (p.FechaDevolucion.Value.DayNumber - p.FechaPrestamo.DayNumber)) : 0;
+    private double PromedioDias => ListaPrestamos.Any(p => p.FechaDevolucion != null)
+        ? ListaPrestamos
+            .Where(p => p.FechaDevolucion != null)
+            .Average(p => (p.FechaDevolucion.Value.DayNumber - p.FechaPrestamo.DayNumber))
+        : 0;
 
     
 }

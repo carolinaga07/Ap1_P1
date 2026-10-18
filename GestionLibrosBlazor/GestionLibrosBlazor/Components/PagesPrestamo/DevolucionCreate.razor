@@ -53,23 +53,30 @@
 
 @code {
     [Parameter]
-    
     public int PrestamoId { get; set; }
 
     private PrestamoLibro Prestamo { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        var prestamo = await prestamoService.Buscar(PrestamoId);
+        var prestamoResult = await prestamoService.Buscar(PrestamoId);
 
-        if (prestamo == null || prestamo.FechaDevolucion != null)
+        prestamoResult.OnSuccess(prestamo =>
+        {
+            if (prestamo == null || prestamo.FechaDevolucion != null)
+            {
+                Navigation.NavigateTo("/prestamos");
+                return;
+            }
+
+            Prestamo = prestamo;
+            Prestamo.FechaDevolucion = DateOnly.FromDateTime(DateTime.Today);
+        });
+
+        prestamoResult.OnFailure(() =>
         {
             Navigation.NavigateTo("/prestamos");
-            return;
-        }
-
-        Prestamo = prestamo;
-        Prestamo.FechaDevolucion = DateOnly.FromDateTime(DateTime.Today);
+        });
     }
 
     private async Task Guardar()
@@ -86,7 +93,7 @@
             return;
         }
 
-        bool exito = await prestamoService.RegistrarDevolucion(
+        var exito = await prestamoService.RegistrarDevolucion(
             Prestamo.PrestamoId,
             Prestamo.FechaDevolucion.Value
         );
