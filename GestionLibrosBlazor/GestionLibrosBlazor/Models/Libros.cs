@@ -22,5 +22,8 @@ namespace GestionLibrosBlazor.Models
 
         [InverseProperty("Libros")]
         public virtual ICollection<PrestamoLibro> Prestamo { get; set; } = new List<PrestamoLibro>();
+
+        [InverseProperty("Libro")]
+        public virtual ICollection<EntradasDetalle> EntradasDetalles { get; set; } = new List<EntradasDetalle>();
     }
 }
