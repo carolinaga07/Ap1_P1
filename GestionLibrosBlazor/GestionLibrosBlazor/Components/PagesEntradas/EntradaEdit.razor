@@ -55,17 +55,38 @@
             </div>
             <div class="card-footer text-center mt-2">
                 <a href="/entradas" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="modalConfirmar" @onclick="PrepararEliminar"> Eliminar</button>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
             </div>
         </div>
     </div>
 </EditForm>
 
+<div class="modal fade" id="modalConfirmar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminacion</h5>
+                <button type="button" class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">@MensajeModal</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="ConfirmarModal"> Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @code {
     [Parameter]
     public int EntradaId{ get; set; }
     public Entradas Entrada { get; set; } = new Entradas();
     public List<Libros> ListaLibros { get; set; } = new List<Libros>();
+    public string MensajeModal { get; set; } = string.Empty;
+    private Func<Task> AccionModal { get; set; } = () => Task.CompletedTask;
 
     protected override async Task OnInitializedAsync()
     {
@@ -118,5 +139,28 @@
             navigationManager.NavigateTo("/entradas");
         });
         modificado.OnFailure(() => toastService.ShowError("No se ha podido modificar correctamente"));
+    }
+
+    private async Task Eliminar()
+    {
+        var resultado = await entradasService.Eliminar(Entrada.EntradaId);
+
+        resultado.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Entrada eliminada correctamente.");
+            navigationManager.NavigateTo("/entradas");
+        });
+        resultado.OnFailure(() => toastService.ShowError("No se ha podido eliminar la entrada."));
+    }
+
+    private void PrepararEliminar()
+    {
+        MensajeModal = $"Eliminar la entrada {Entrada.Concepto} con un total de {Entrada.Total} libros? Se va a restar del stock del cada libro";
+        AccionModal = Eliminar; 
+    }
+
+    private async Task ConfirmarModal()
+    {
+        await AccionModal();
     }
 }
