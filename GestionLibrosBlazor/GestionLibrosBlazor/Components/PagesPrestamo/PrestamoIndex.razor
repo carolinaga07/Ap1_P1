@@ -34,7 +34,7 @@
                     <PropertyColumn Property="p => p.Libros.Titulo" Title="Libro" Sortable="true" />
                     <PropertyColumn Property="p => p.FechaPrestamo" Title="Fecha Prestamo" Sortable="true" />
                     <PropertyColumn Property="p => p.FechaDevolucion" Title="Fecha Devolucion" Sortable="true" />
-                    <TemplateColumn Title="Opciones">
+                    <TemplateColumn title="Opciones">
                         <a href="/prestamos/edit/@context.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                         @if (context.FechaDevolucion == null)
                         {
@@ -107,7 +107,5 @@
         ? ListaPrestamos
             .Where(p => p.FechaDevolucion != null)
             .Average(p => (p.FechaDevolucion.Value.DayNumber - p.FechaPrestamo.DayNumber))
-        : 0;
-
-    
+        : 0;  
 }

@@ -28,29 +28,29 @@
                     <InputText class="form-control" @bind-Value="Entrada.Concepto"></InputText>
                     <ValidationMessage For="@(() => Entrada.Concepto)" />
                 </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Total</label>
+                    <InputNumber class="form-control" @bind-Value="Entrada.Total" />         
+                    <ValidationMessage For="(() => Entrada.Total)" />
+                </div>
+                    
+                
                 <div class="border border-success p-3 mt-3">
                     <h5>Detalle de la Entrada</h5>
                     <LibroPicker Libros="ListaLibros" OnLibroSelected="HandleLibroSelected" />
                     <hr />
                     <QuickGrid Items="Entrada.EntradasDetalles.AsQueryable()" class="table table-light text-center">
-                        <TemplateColumn title="Libro">
-                            @TituloLibro(context.LibroId)
+                        <PropertyColumn Property="d => d.LibroId" title="LibroId"></PropertyColumn>
+                        <TemplateColumn title="Libro" Context="detalle">
+                            @TituloLibro(detalle.LibroId)
                         </TemplateColumn>
                         <PropertyColumn Property="d => d.Cantidad" title="Cantidad" />
-                        <TemplateColumn Title="Remover">
-                            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="() => Quitar(context)"></button>
+                        <TemplateColumn Title="Remover" Context="detalle">
+                            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="() => Quitar(detalle)"></button>
                         </TemplateColumn>
                     </QuickGrid>
                     <hr />
-                </div>
-                <div class="row mt-2">
-                    <div class="col-6 offset-6">
-                        <div class="mb-3">
-                            <label class="form-label">Total</label>
-                            <label class="form-control text-end">@Entrada.Total</label>
-                            <ValidationMessage For="(() => Entrada.Total)" />
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="card-footer text-center mt-2">
@@ -69,13 +69,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Entrada = await EntradasService.Buscar(EntradaId) ?? new Entradas();
-        ListaLibros = await librosService.GetList(l => l.LibroId > 0);
+        var resultado = await entradasService.Buscar(EntradaId);
+        resultado.OnSuccess(entrada => Entrada = entrada ?? new Entradas());
+
+        var librosResult = await librosService.GetList(l => l.LibroId > 0);
+        librosResult.OnSuccess(libros => ListaLibros = libros);
+        librosResult.OnFailure(() => toastService.ShowError("No se pudieron cargar los libros."));
     }
 
     private string TituloLibro(int libroId)
     {
-        return ListaLibros.FirstOrDefault(l => l.LibroId == libroId).Titulo ?? string.Empty;
+        return ListaLibros.FirstOrDefault(l => l.LibroId == libroId)?.Titulo ?? string.Empty;
     }
 
     private Task HandleLibroSelected((Libros Libro, int Cantidad) selection)
@@ -90,6 +94,7 @@
             Entrada.EntradasDetalles.Add(new EntradasDetalle { LibroId = selection.Libro.LibroId, Cantidad = selection.Cantidad });
         }
         Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
+        return Task.CompletedTask;
     }
 
     private void Quitar(EntradasDetalle detalle)
@@ -105,15 +110,13 @@
             toastService.ShowError("El concepto es requerido.");
             return;
         }
-        bool modificado = await entradasService.Guardar(Entrada);
-        if (modificado)
+
+        var modificado = await entradasService.Guardar(Entrada);
+        modificado.OnSuccess(() =>
         {
             toastService.ShowSuccess("Se ha modificado correctamente");
             navigationManager.NavigateTo("/entradas");
-        }
-        else
-        {
-            toastService.ShowError("No se ha podido modificar correctamente");
-        }
+        });
+        modificado.OnFailure(() => toastService.ShowError("No se ha podido modificar correctamente"));
     }
 }

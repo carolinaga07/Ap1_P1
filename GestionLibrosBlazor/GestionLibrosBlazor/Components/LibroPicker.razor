@@ -11,7 +11,7 @@
         }
     </InputSelect>
     <label class="col-form-label input-group-text">Cantidad:</label>
-    <InputNumber class="form-control" id="quantuty-input" @bind-Value="CantidadSeleccionada" min="1" />
+    <InputNumber class="form-control" id="quantity-input" @bind-Value="CantidadSeleccionada" min="1" />
     <button type="button" class="btn btn-outline-success bi bi-plus" @onclick="TriggerSelection">Agregar</button>
 </div>
 
@@ -27,8 +27,10 @@
     [Parameter]
     public int LibroId { get; set; }
     public Libros? libro { get; set; }
+    [Parameter]
     public List<Libros> Libros { get; set; } = new List<Libros>();
     public int CantidadSeleccionada { get; set; } = 1;
+    [Parameter]
     public EventCallback<(Libros Libro, int Cantidad)> OnLibroSelected { get; set; }
     private string? ErrorMessage { get; set; } = null;
 
@@ -43,11 +45,11 @@
                 ErrorMessage = "La cantidad debe ser mayor a cero";
                 return;
             }
-            if(CantidadSeleccionada > libroSeleccionado.Cantidad)
+            /*if(CantidadSeleccionada > libroSeleccionado.Cantidad)
             {
                 ErrorMessage = $"No hay suficiente stock disponible. Stock actual: {libroSeleccionado.Cantidad}";
                 return;
-            }
+            }*/
             await OnLibroSelected.InvokeAsync((libroSeleccionado, CantidadSeleccionada));
         }
         else
