@@ -15,15 +15,19 @@
                 <h5 class="card-title">Crear Entrada</h5>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">EntradaId</label>
-                    <InputNumber class="form-control" @bind-Value="Entrada.EntradaId" readonly></InputNumber>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">EntradaId</label>
+                        <InputNumber class="form-control" @bind-Value="Entrada.EntradaId" readonly></InputNumber>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Fecha</label>
+                        <InputDate class="form-control" @bind-Value="Entrada.Fecha"></InputDate>
+                        <ValidationMessage For="@(() => Entrada.Fecha)" />
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Fecha</label>
-                    <InputDate class="form-control" @bind-Value="Entrada.Fecha"></InputDate>
-                    <ValidationMessage For="@(() => Entrada.Fecha)" />
-                </div>
+               
                 <div class="mb-3">
                     <label class="form-label">Concepto</label>
                     <InputText class="form-control" @bind-Value="Entrada.Concepto"></InputText>
@@ -32,14 +36,14 @@
                 <div>
                     <div class="mb-3">
                         <label class="form-label">Total</label>
-                        <InputNumber class="form-control" @bind-Value="Entrada.Total"></InputNumber>
+                        <InputNumber class="form-control" @bind-Value="Entrada.Total" readonly></InputNumber>
                         <ValidationMessage For="@(() => Entrada.Total)" />
                     </div>
                 </div>
 
                 <div class="border border-success p-3 mt-3">
                     <h5>Detalle de la Entrada</h5>
-                    <LibroPicker Libros="ListaLibros" OnLibroSelected="HandleLibroSelected" />
+                    <LibroPicker Libros="ListaLibros" @bind-LibroId="DetalleTemporal.LibroId" @bind-CantidadSeleccionada="DetalleTemporal.Cantidad" OnLibroSelected="HandleLibroSelected" />
                     <hr />
                     <QuickGrid Items="Entrada.EntradasDetalles.AsQueryable()" class="table table-light text-center">
                         <PropertyColumn Property="d => d.LibroId" title="LibroId"></PropertyColumn>
@@ -48,9 +52,10 @@
                         </TemplateColumn>
                         <PropertyColumn Property="d => d.Cantidad" title="Cantidad" />
                         <TemplateColumn Title="Remover" Context="detalle">
-                            <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalConfirmar" @onclick="() => PrepararQuitar(detalle)"></button>
+                            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="() => Quitar(detalle)"></button>
                         </TemplateColumn>
                     </QuickGrid>
+                    <hr />
                 </div>
             </div>
             <div class="card-footer text-center mt-2">
@@ -61,28 +66,12 @@
     </div>
 </EditForm>
 
-<div class="modal fade" id="modalConfirmar" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminacion</h5>
-                <button type="button" class="btn btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-0">@MensajeModal</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Cancelar</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="ConfirmarModal" > Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
 @code {
     public Entradas Entrada { get; set; } = new Entradas();
     public List<Libros> ListaLibros { get; set; } = new List<Libros>();
     private string MensajeModal { get; set; } = string.Empty;
     private Func<Task> AccionModal { get; set; } = () => Task.CompletedTask;
+    public EntradasDetalle DetalleTemporal { get; set; } = new() { Cantidad = 1 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,11 +104,17 @@
         }
 
         Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
+        DetalleTemporal = new() { Cantidad = 1 };
         return Task.CompletedTask;
     }
 
     private void Quitar(EntradasDetalle detalle)
     {
+        DetalleTemporal = new EntradasDetalle
+        {
+            LibroId = detalle.LibroId,
+            Cantidad = detalle.Cantidad
+        };
         Entrada.EntradasDetalles.Remove(detalle);
         Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
     }
@@ -139,20 +134,5 @@
             navigationManager.NavigateTo("/entradas");
         });
         guardado.OnFailure(() => toastService.ShowError("No se ha podido guardar la entrada"));
-    }
-
-    private async Task ConfirmarModal()
-    {
-        await AccionModal();
-    }
-
-    private void PrepararQuitar(EntradasDetalle detalle)
-    {
-        MensajeModal = $"Eliminar {TituloLibro(detalle.LibroId)} (cantidad {detalle.Cantidad}) del detalle? El cambio se aplica al guardar la entrada.";
-        AccionModal = () =>
-        {
-            Quitar(detalle);
-            return Task.CompletedTask;
-        };
     }
 }

@@ -26,38 +26,46 @@
 {
     [Parameter]
     public int LibroId { get; set; }
-    public Libros? libro { get; set; }
     [Parameter]
-    public List<Libros> Libros { get; set; } = new List<Libros>();
+    public EventCallback<int> LibroIdChanged { get; set; }
+
+    [Parameter]
     public int CantidadSeleccionada { get; set; } = 1;
     [Parameter]
+    public EventCallback<int> CantidadSeleccionadaChanged { get; set; }
+
+    [Parameter]
+    public List<Libros> Libros { get; set; } = new List<Libros>();
+
+    [Parameter]
     public EventCallback<(Libros Libro, int Cantidad)> OnLibroSelected { get; set; }
+
     private string? ErrorMessage { get; set; } = null;
 
     private async Task TriggerSelection()
     {
         ErrorMessage = null;
-        if(LibroId > 0)
+        if (LibroId > 0)
         {
             var libroSeleccionado = Libros.Single(l => l.LibroId == LibroId);
-            if(CantidadSeleccionada <= 0)
+            if (CantidadSeleccionada <= 0)
             {
                 ErrorMessage = "La cantidad debe ser mayor a cero";
                 return;
             }
-            /*if(CantidadSeleccionada > libroSeleccionado.Cantidad)
-            {
-                ErrorMessage = $"No hay suficiente stock disponible. Stock actual: {libroSeleccionado.Cantidad}";
-                return;
-            }*/
+            
             await OnLibroSelected.InvokeAsync((libroSeleccionado, CantidadSeleccionada));
+
+            LibroId = 0;
+            await LibroIdChanged.InvokeAsync(LibroId);
+
+            CantidadSeleccionada = 1;
+            await CantidadSeleccionadaChanged.InvokeAsync(CantidadSeleccionada);
         }
         else
         {
-            ErrorMessage = "hubo un error, seleccione un libro valido";
+            ErrorMessage = "Hubo un error, seleccione un libro válido";
         }
     }
-
-   
-
+}
 }

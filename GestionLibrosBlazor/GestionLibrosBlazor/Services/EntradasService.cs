@@ -57,9 +57,17 @@ public class EntradasService(
         entradaOriginal.Fecha = entradas.Fecha;
         entradaOriginal.Concepto = entradas.Concepto;
         entradaOriginal.Total = entradas.Total;
-        entradaOriginal.EntradasDetalles = entradas.EntradasDetalles;
 
-        contexto.Entradas.Update(entradaOriginal);
+        entradaOriginal.EntradasDetalles.Clear();
+        foreach(var detalle in entradas.EntradasDetalles)
+        {
+            entradaOriginal.EntradasDetalles.Add(new EntradasDetalle
+            {
+                EntradaId = entradas.EntradaId,
+                LibroId = detalle.LibroId,
+                Cantidad = detalle.Cantidad
+            });
+        }
         return await contexto.SaveChangesAsync() > 0;
     }
 
@@ -67,7 +75,9 @@ public class EntradasService(
     {
         foreach (var item in detalle)
         {
-            var libro = await contexto.Libros.SingleAsync(l => l.LibroId == item.LibroId);
+            var libro = await contexto.Libros.FirstOrDefaultAsync(l => l.LibroId == item.LibroId);
+            if(libro != null) 
+            { 
             if(tipoOperacion == TipoOperacionEntrada.Suma)
             {
                 libro.Cantidad += item.Cantidad;
@@ -75,6 +85,7 @@ public class EntradasService(
             else
             {
                 libro.Cantidad -= item.Cantidad;
+            }
             }
         }
     }
