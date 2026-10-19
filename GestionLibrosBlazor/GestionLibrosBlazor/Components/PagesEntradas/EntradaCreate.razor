@@ -1,0 +1,138 @@
+﻿@page "/entradas/create"
+@using Microsoft.AspNetCore.Components.Rendering
+@rendermode InteractiveServer
+@inject EntradasService entradasService
+@inject LibrosService librosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle> Crear Entrada</PageTitle>
+<EditForm Model="Entrada" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Entrada</h5>
+            </div>
+            <div class="card-body">
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">EntradaId</label>
+                        <InputNumber class="form-control" @bind-Value="Entrada.EntradaId" readonly></InputNumber>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Fecha</label>
+                        <InputDate class="form-control" @bind-Value="Entrada.Fecha"></InputDate>
+                        <ValidationMessage For="@(() => Entrada.Fecha)" />
+                    </div>
+                </div>
+               
+                <div class="mb-3">
+                    <label class="form-label">Concepto</label>
+                    <InputText class="form-control" @bind-Value="Entrada.Concepto"></InputText>
+                    <ValidationMessage For="@(() => Entrada.Concepto)" />
+                </div>
+                <div>
+                    <div class="mb-3">
+                        <label class="form-label">Total</label>
+                        <InputNumber class="form-control" @bind-Value="Entrada.Total" readonly></InputNumber>
+                        <ValidationMessage For="@(() => Entrada.Total)" />
+                    </div>
+                </div>
+
+                <div class="border border-success p-3 mt-3">
+                    <h5>Detalle de la Entrada</h5>
+                    <LibroPicker Libros="ListaLibros" @bind-LibroId="DetalleTemporal.LibroId" @bind-CantidadSeleccionada="DetalleTemporal.Cantidad" OnLibroSelected="HandleLibroSelected" />
+                    <hr />
+                    <QuickGrid Items="Entrada.EntradasDetalles.AsQueryable()" class="table table-light text-center">
+                        <PropertyColumn Property="d => d.LibroId" title="LibroId"></PropertyColumn>
+                        <TemplateColumn title="Libro" Context="detalle">
+                            @TituloLibro(detalle.LibroId)
+                        </TemplateColumn>
+                        <PropertyColumn Property="d => d.Cantidad" title="Cantidad" />
+                        <TemplateColumn Title="Remover" Context="detalle">
+                            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="() => Quitar(detalle)"></button>
+                        </TemplateColumn>
+                    </QuickGrid>
+                    <hr />
+                </div>
+            </div>
+            <div class="card-footer text-center mt-2">
+                <a href="/entradas" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Entradas Entrada { get; set; } = new Entradas();
+    public List<Libros> ListaLibros { get; set; } = new List<Libros>();
+    private string MensajeModal { get; set; } = string.Empty;
+    private Func<Task> AccionModal { get; set; } = () => Task.CompletedTask;
+    public EntradasDetalle DetalleTemporal { get; set; } = new() { Cantidad = 1 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var librosResult = await librosService.GetList(l => l.LibroId > 0);
+        librosResult.OnSuccess(libros => ListaLibros = libros);
+        librosResult.OnFailure(() => toastService.ShowError("No se pudieron cargar los libros."));
+        Entrada.Fecha = DateOnly.FromDateTime(DateTime.Today);
+    }
+
+    private string TituloLibro(int libroId)
+    {
+        return ListaLibros.FirstOrDefault(l => l.LibroId == libroId)?.Titulo ?? string.Empty;
+    }
+
+    private Task HandleLibroSelected((Libros Libro, int Cantidad) selection)
+    {
+        var existente = Entrada.EntradasDetalles.FirstOrDefault(d => d.LibroId == selection.Libro.LibroId);
+
+        if (existente != null)
+        {
+            existente.Cantidad += selection.Cantidad;
+        }
+        else
+        {
+            Entrada.EntradasDetalles.Add(new EntradasDetalle
+            {
+                LibroId = selection.Libro.LibroId,
+                Cantidad = selection.Cantidad
+            });
+        }
+
+        Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
+        DetalleTemporal = new() { Cantidad = 1 };
+        return Task.CompletedTask;
+    }
+
+    private void Quitar(EntradasDetalle detalle)
+    {
+        DetalleTemporal = new EntradasDetalle
+        {
+            LibroId = detalle.LibroId,
+            Cantidad = detalle.Cantidad
+        };
+        Entrada.EntradasDetalles.Remove(detalle);
+        Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
+    }
+
+    private async Task Guardar()
+    {
+        if (string.IsNullOrWhiteSpace(Entrada.Concepto))
+        {
+            toastService.ShowError("El concepto es requerido.");
+            return;
+        }
+
+        var guardado = await entradasService.Guardar(Entrada);
+        guardado.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Entrada guardada correctamente");
+            navigationManager.NavigateTo("/entradas");
+        });
+        guardado.OnFailure(() => toastService.ShowError("No se ha podido guardar la entrada"));
+    }
+}

@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Components.Rendering
+
+<div class="col-auto input-group align-items-center">
+    <label class="col-form-label input-group-text">Seleccione el libro:</label>
+
+    <InputSelect class="form-control form-select" @bind-Value="LibroId">
+        <option disabled value="0">-- selecciona un libro --</option>
+        @foreach (var libro in Libros)
+        {
+            <option value="@libro.LibroId">@libro.LibroId - @libro.Titulo (Stock Actual: @libro.Cantidad)</option>
+        }
+    </InputSelect>
+    <label class="col-form-label input-group-text">Cantidad:</label>
+    <InputNumber class="form-control" id="quantity-input" @bind-Value="CantidadSeleccionada" min="1" />
+    <button type="button" class="btn btn-outline-success bi bi-plus" @onclick="TriggerSelection">Agregar</button>
+</div>
+
+@if(ErrorMessage != null)
+{
+    <div class="alert alert-danger mt-2" role="alert">
+        @ErrorMessage
+    </div>
+}    
+
+@code
+{
+    [Parameter]
+    public int LibroId { get; set; }
+    [Parameter]
+    public EventCallback<int> LibroIdChanged { get; set; }
+
+    [Parameter]
+    public int CantidadSeleccionada { get; set; } = 1;
+    [Parameter]
+    public EventCallback<int> CantidadSeleccionadaChanged { get; set; }
+
+    [Parameter]
+    public List<Libros> Libros { get; set; } = new List<Libros>();
+
+    [Parameter]
+    public EventCallback<(Libros Libro, int Cantidad)> OnLibroSelected { get; set; }
+
+    private string? ErrorMessage { get; set; } = null;
+
+    private async Task TriggerSelection()
+    {
+        ErrorMessage = null;
+        if (LibroId > 0)
+        {
+            var libroSeleccionado = Libros.Single(l => l.LibroId == LibroId);
+            if (CantidadSeleccionada <= 0)
+            {
+                ErrorMessage = "La cantidad debe ser mayor a cero";
+                return;
+            }
+            
+            await OnLibroSelected.InvokeAsync((libroSeleccionado, CantidadSeleccionada));
+
+            LibroId = 0;
+            await LibroIdChanged.InvokeAsync(LibroId);
+
+            CantidadSeleccionada = 1;
+            await CantidadSeleccionadaChanged.InvokeAsync(CantidadSeleccionada);
+        }
+        else
+        {
+            ErrorMessage = "Hubo un error, seleccione un libro válido";
+        }
+    }
+}
+}

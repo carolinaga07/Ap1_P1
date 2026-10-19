@@ -1,0 +1,181 @@
+﻿@page "/entradas/edit/{EntradaId:int}"
+@rendermode InteractiveServer
+@inject EntradasService entradasService
+@inject LibrosService librosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle> Editar Entrada</PageTitle>
+<EditForm Model="Entrada" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Editar Entrada</h5>
+            </div>
+            <div class="card-body">
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">EntradaId</label>
+                        <InputNumber class="form-control" @bind-Value="Entrada.EntradaId" readonly></InputNumber>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Fecha</label>
+                        <InputDate class="form-control" @bind-Value="Entrada.Fecha"></InputDate>
+                        <ValidationMessage For="@(() => Entrada.Fecha)" />
+                    </div>
+                </div>
+               
+                <div class="mb-3">
+                    <label class="form-label">Concepto</label>
+                    <InputText class="form-control" @bind-Value="Entrada.Concepto"></InputText>
+                    <ValidationMessage For="@(() => Entrada.Concepto)" />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Total</label>
+                    <InputNumber class="form-control" @bind-Value="Entrada.Total" readonly />         
+                    <ValidationMessage For="(() => Entrada.Total)" />
+                </div>
+                    
+                
+                <div class="border border-success p-3 mt-3">
+                    <h5>Detalle de la Entrada</h5>
+                    <LibroPicker Libros="ListaLibros" @bind-LibroId="DetalleTemporal.LibroId" @bind-CantidadSeleccionada="DetalleTemporal.Cantidad" OnLibroSelected="HandleLibroSelected" />
+                    <hr />
+                    <QuickGrid Items="Entrada.EntradasDetalles.AsQueryable()" class="table table-light text-center">
+                        <PropertyColumn Property="d => d.LibroId" title="LibroId"></PropertyColumn>
+                        <TemplateColumn title="Libro" Context="detalle">
+                            @TituloLibro(detalle.LibroId)
+                        </TemplateColumn>
+                        <PropertyColumn Property="d => d.Cantidad" title="Cantidad" />
+                        <TemplateColumn Title="Remover" Context="detalle">
+                            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="() => Quitar(detalle)"></button>
+                        </TemplateColumn>
+                    </QuickGrid>
+                    <hr />
+                </div>
+            </div>
+            <div class="card-footer text-center mt-2">
+                <a href="/entradas" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalConfirmar" @onclick="PrepararEliminar"> Eliminar</button>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+<div class="modal fade" id="modalConfirmar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminacion</h5>
+                <button type="button" class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">@MensajeModal</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="ConfirmarModal"> Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int EntradaId{ get; set; }
+    public Entradas Entrada { get; set; } = new Entradas();
+    public List<Libros> ListaLibros { get; set; } = new List<Libros>();
+    public string MensajeModal { get; set; } = string.Empty;
+    private Func<Task> AccionModal { get; set; } = () => Task.CompletedTask;
+    public EntradasDetalle DetalleTemporal { get; set; } = new() { Cantidad = 1 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resultado = await entradasService.Buscar(EntradaId);
+        resultado.OnSuccess(entrada => Entrada = entrada ?? new Entradas());
+
+        var librosResult = await librosService.GetList(l => l.LibroId > 0);
+        librosResult.OnSuccess(libros => ListaLibros = libros);
+        librosResult.OnFailure(() => toastService.ShowError("No se pudieron cargar los libros."));
+    }
+
+    private string TituloLibro(int libroId)
+    {
+        return ListaLibros.FirstOrDefault(l => l.LibroId == libroId)?.Titulo ?? string.Empty;
+    }
+
+    private Task HandleLibroSelected((Libros Libro, int Cantidad) selection)
+    {
+        var existente = Entrada.EntradasDetalles.FirstOrDefault(d => d.LibroId == selection.Libro.LibroId);
+        if (existente != null)
+        {
+            existente.Cantidad += selection.Cantidad;
+        }
+        else
+        {
+            Entrada.EntradasDetalles.Add(new EntradasDetalle
+            {
+                LibroId = selection.Libro.LibroId,
+                Cantidad = selection.Cantidad
+            });
+        }
+        Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
+        DetalleTemporal = new() {Cantidad = 1};
+        return Task.CompletedTask;
+    }
+
+    private void Quitar(EntradasDetalle detalle)
+    {
+        DetalleTemporal = new EntradasDetalle
+            {
+                LibroId = detalle.LibroId,
+                Cantidad = detalle.Cantidad
+            };
+        Entrada.EntradasDetalles.Remove(detalle);
+        Entrada.Total = Entrada.EntradasDetalles.Sum(d => d.Cantidad);
+    }
+
+    private async Task Modificar()
+    {
+        if (string.IsNullOrWhiteSpace(Entrada.Concepto))
+        {
+            toastService.ShowError("El concepto es requerido.");
+            return;
+        }
+
+        var modificado = await entradasService.Guardar(Entrada);
+        modificado.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Se ha modificado correctamente");
+            navigationManager.NavigateTo("/entradas");
+        });
+        modificado.OnFailure(() => toastService.ShowError("No se ha podido modificar correctamente"));
+    }
+
+    private async Task Eliminar()
+    {
+        var resultado = await entradasService.Eliminar(Entrada.EntradaId);
+
+        resultado.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Entrada eliminada correctamente.");
+            navigationManager.NavigateTo("/entradas");
+        });
+        resultado.OnFailure(() => toastService.ShowError("No se ha podido eliminar la entrada."));
+    }
+
+    private void PrepararEliminar()
+    {
+        MensajeModal = $"Eliminar la entrada {Entrada.Concepto} con un total de {Entrada.Total} libros? Se va a restar del stock del cada libro";
+        AccionModal = Eliminar; 
+    }
+
+    private async Task ConfirmarModal()
+    {
+        await AccionModal();
+    }
+}

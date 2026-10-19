@@ -22,6 +22,55 @@ namespace GestionLibrosBlazor.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GestionLibrosBlazor.Models.Entradas", b =>
+                {
+                    b.Property<int>("EntradaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EntradaId"));
+
+                    b.Property<string>("Concepto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.HasKey("EntradaId");
+
+                    b.ToTable("Entradas");
+                });
+
+            modelBuilder.Entity("GestionLibrosBlazor.Models.EntradasDetalle", b =>
+                {
+                    b.Property<int>("DetalleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetalleId"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntradaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibroId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DetalleId");
+
+                    b.HasIndex("EntradaId");
+
+                    b.HasIndex("LibroId");
+
+                    b.ToTable("EntradasDetalles");
+                });
+
             modelBuilder.Entity("GestionLibrosBlazor.Models.Estudiantes", b =>
                 {
                     b.Property<int>("EstudianteId")
@@ -124,6 +173,25 @@ namespace GestionLibrosBlazor.Migrations
                     b.ToTable("Prestamos");
                 });
 
+            modelBuilder.Entity("GestionLibrosBlazor.Models.EntradasDetalle", b =>
+                {
+                    b.HasOne("GestionLibrosBlazor.Models.Entradas", "Entrada")
+                        .WithMany("EntradasDetalles")
+                        .HasForeignKey("EntradaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionLibrosBlazor.Models.Libros", "Libro")
+                        .WithMany("EntradasDetalles")
+                        .HasForeignKey("LibroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Entrada");
+
+                    b.Navigation("Libro");
+                });
+
             modelBuilder.Entity("GestionLibrosBlazor.Models.PrestamoLibro", b =>
                 {
                     b.HasOne("GestionLibrosBlazor.Models.Estudiantes", "Estudiantes")
@@ -143,6 +211,11 @@ namespace GestionLibrosBlazor.Migrations
                     b.Navigation("Libros");
                 });
 
+            modelBuilder.Entity("GestionLibrosBlazor.Models.Entradas", b =>
+                {
+                    b.Navigation("EntradasDetalles");
+                });
+
             modelBuilder.Entity("GestionLibrosBlazor.Models.Estudiantes", b =>
                 {
                     b.Navigation("Prestamo");
@@ -150,6 +223,8 @@ namespace GestionLibrosBlazor.Migrations
 
             modelBuilder.Entity("GestionLibrosBlazor.Models.Libros", b =>
                 {
+                    b.Navigation("EntradasDetalles");
+
                     b.Navigation("Prestamo");
                 });
 #pragma warning restore 612, 618

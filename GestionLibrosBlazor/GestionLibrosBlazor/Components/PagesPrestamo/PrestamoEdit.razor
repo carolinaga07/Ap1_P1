@@ -41,16 +41,15 @@
                     <ValidationMessage For="(() => Prestamo.LibroId)" />
                 </div>
 
-               <div class="mb-3">
-                   <label class="form-label"><strong>Fecha</strong></label>
-                   <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo"></InputDate>
-               </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo"></InputDate>
+                </div>
 
                 <div class="card-footer text-center mt-2">
                     <a href="/prestamos" class="btn btn-secondary"><span class="bi bi-arrow-left"></span>Volver</a>
                     <button type="button" class="btn btn-outline-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalEliminar"> Eliminar</button>
                     <button type="submit" class="btn btn-primary bi bi-floppy">Guardar</button>
-
                 </div>
             </div>
         </div>
@@ -86,7 +85,6 @@
     public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
     public List<Libros> ListaLibros { get; set; } = new List<Libros>();
 
-
     protected override async Task OnInitializedAsync()
     {
         var prestamoResult = await prestamoService.Buscar(PrestamoId);
@@ -104,8 +102,7 @@
             toastService.ShowError("No se pudo encontrar el préstamo.");
         });
 
-        var estudiantesResult =
-            await estudiantesService.GetList(e => e.EstudianteId > 0);
+        var estudiantesResult = await estudiantesService.GetList(e => e.EstudianteId > 0);
 
         estudiantesResult.OnSuccess(lista =>
         {
@@ -117,8 +114,7 @@
             toastService.ShowError("No se pudieron cargar los estudiantes.");
         });
 
-        var librosResult =
-            await librosService.GetList(l => l.LibroId > 0);
+        var librosResult = await librosService.GetList(l => l.LibroId > 0);
 
         librosResult.OnSuccess(lista =>
         {
@@ -139,8 +135,7 @@
         if (await prestamoService.EstudianteTienePrestamo(
             Prestamo.EstudianteId, Prestamo.PrestamoId))
         {
-            toastService.ShowError(
-                "Este estudiante ya tiene un préstamo activo.");
+            toastService.ShowError("Este estudiante ya tiene un préstamo activo.");
             return;
         }
 
@@ -155,30 +150,29 @@
 
         resultado.OnSuccess(() =>
         {
-            toastService.ShowSuccess(
-                "Se ha modificado correctamente el préstamo.");
-
+            toastService.ShowSuccess("Se ha modificado correctamente el préstamo.");
             Navigation.NavigateTo("/prestamos");
         });
 
         resultado.OnFailure(() =>
         {
-            toastService.ShowError(
-                "No se ha podido modificar el préstamo.");
+            toastService.ShowError("No se ha podido modificar el préstamo.");
         });
-    }
     }
 
     private async Task ConfirmarEliminar()
     {
-        if (await prestamoService.Eliminar(Prestamo.PrestamoId))
+        var resultado = await prestamoService.Eliminar(Prestamo.PrestamoId);
+
+        resultado.OnSuccess(() =>
         {
             toastService.ShowSuccess("Prestamo eliminado correctamente.");
             Navigation.NavigateTo("/prestamos");
-        }
-        else
+        });
+
+        resultado.OnFailure(() =>
         {
             toastService.ShowError("no se pudo eliminar el prestamo");
-        }
+        });
     }
 }
