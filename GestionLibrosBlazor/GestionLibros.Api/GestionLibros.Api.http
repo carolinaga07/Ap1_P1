@@ -76,3 +76,47 @@ Accept: application/json
 ### VERIFICAR SI EXISTE UN TITULO
 GET {{GestionLibros.Api_HostAddress}}/api/Libros/ExisteTitulo?titulo=Libro%20de%20prueba%20API
 Accept: application/json
+
+###########################################
+
+
+### LISTAR PRESTAMOS
+GET {{GestionLibros.Api_HostAddress}}/api/Prestamos
+Accept: application/json
+
+### BUSCAR PRESTAMO POR ID
+GET {{GestionLibros.Api_HostAddress}}/api/Prestamos/5
+Accept: application/json
+
+### REGISTRAR PRESTAMO
+POST {{GestionLibros.Api_HostAddress}}/api/Prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": 5,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31",
+  "fechaDevolucion": null
+}
+
+### MODIFICAR PRESTAMO
+PUT {{GestionLibros.Api_HostAddress}}/api/Prestamos/6
+Content-Type: application/json
+
+{
+  "prestamoId": 6 ,
+  "estudianteId": 5,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31",
+  "fechaDevolucion": null
+}
+
+### REGISTRAR DEVOLUCION
+PUT {{GestionLibros.Api_HostAddress}}/api/Prestamos/5/devolucion
+Content-Type: application/json
+
+"2026-11-01"
+
+### ELIMINAR PRESTAMO
+DELETE {{GestionLibros.Api_HostAddress}}/api/Prestamos/5
+Accept: application/json
