@@ -1,6 +1,37 @@
+
 @GestionLibros.Api_HostAddress = http://localhost:5078
 
-GET {{GestionLibros.Api_HostAddress}}/weatherforecast/
+### LISTAR TODOS LOS ESTUDIANTES
+GET {{GestionLibros.Api_HostAddress}}/api/Estudiantes
 Accept: application/json
 
-###
+### BUSCAR ESTUDIANTE POR ID
+GET {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
+Accept: application/json
+
+### REGISTRAR UN ESTUDIANTE
+POST {{GestionLibros.Api_HostAddress}}/api/Estudiantes
+Content-Type: application/json
+
+{
+  "nombres": "Estudiante API",
+  "direccion": "Santiago",
+  "email": "estudianteapi@gmail.com",
+  "fechaNacimiento": "2003-09-19"
+}
+
+### MODIFICAR UN ESTUDIANTE
+PUT {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
+Content-Type: application/json
+
+{
+  "estudianteId": 4,
+  "nombres": "Estudiante Modificado",
+  "direccion": "Santo Domingo",
+  "email": "modificado@gmail.com",
+  "fechaNacimiento": "2003-09-19"
+}
+
+### ELIMINAR UN ESTUDIANTE
+DELETE {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
+Accept: application/json
