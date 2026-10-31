@@ -35,3 +35,44 @@ Content-Type: application/json
 ### ELIMINAR UN ESTUDIANTE
 DELETE {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
 Accept: application/json
+
+###############################################
+
+### LISTAR TODOS LOS LIBROS
+GET {{GestionLibros.Api_HostAddress}}/api/Libros
+Accept: application/json
+
+### BUSCAR LIBRO POR ID
+GET {{GestionLibros.Api_HostAddress}}/api/Libros/1
+Accept: application/json
+
+### REGISTRAR UN LIBRO
+POST {{GestionLibros.Api_HostAddress}}/api/Libros
+Content-Type: application/json
+
+{
+  "titulo": "Libro de prueba API",
+  "autor": "Autor de prueba",
+  "anioPublicacion": 2020,
+  "cantidad": 10
+}
+
+### MODIFICAR UN LIBRO
+PUT {{GestionLibros.Api_HostAddress}}/api/Libros/5
+Content-Type: application/json
+
+{
+  "libroId": 5,
+  "titulo": "Libro de prueba modificado",
+  "autor": "Autor actualizado",
+  "anioPublicacion": 2021,
+  "cantidad": 15
+}
+
+### ELIMINAR UN LIBRO
+DELETE {{GestionLibros.Api_HostAddress}}/api/Libros/5
+Accept: application/json
+
+### VERIFICAR SI EXISTE UN TITULO
+GET {{GestionLibros.Api_HostAddress}}/api/Libros/ExisteTitulo?titulo=Libro%20de%20prueba%20API
+Accept: application/json
