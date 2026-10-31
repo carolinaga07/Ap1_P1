@@ -1,0 +1,122 @@
+
+@GestionLibros.Api_HostAddress = http://localhost:5078
+
+### LISTAR TODOS LOS ESTUDIANTES
+GET {{GestionLibros.Api_HostAddress}}/api/Estudiantes
+Accept: application/json
+
+### BUSCAR ESTUDIANTE POR ID
+GET {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
+Accept: application/json
+
+### REGISTRAR UN ESTUDIANTE
+POST {{GestionLibros.Api_HostAddress}}/api/Estudiantes
+Content-Type: application/json
+
+{
+  "nombres": "Estudiante API",
+  "direccion": "Santiago",
+  "email": "estudianteapi@gmail.com",
+  "fechaNacimiento": "2003-09-19"
+}
+
+### MODIFICAR UN ESTUDIANTE
+PUT {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
+Content-Type: application/json
+
+{
+  "estudianteId": 4,
+  "nombres": "Estudiante Modificado",
+  "direccion": "Santo Domingo",
+  "email": "modificado@gmail.com",
+  "fechaNacimiento": "2003-09-19"
+}
+
+### ELIMINAR UN ESTUDIANTE
+DELETE {{GestionLibros.Api_HostAddress}}/api/Estudiantes/4
+Accept: application/json
+
+###############################################
+
+### LISTAR TODOS LOS LIBROS
+GET {{GestionLibros.Api_HostAddress}}/api/Libros
+Accept: application/json
+
+### BUSCAR LIBRO POR ID
+GET {{GestionLibros.Api_HostAddress}}/api/Libros/1
+Accept: application/json
+
+### REGISTRAR UN LIBRO
+POST {{GestionLibros.Api_HostAddress}}/api/Libros
+Content-Type: application/json
+
+{
+  "titulo": "Libro de prueba API",
+  "autor": "Autor de prueba",
+  "anioPublicacion": 2020,
+  "cantidad": 10
+}
+
+### MODIFICAR UN LIBRO
+PUT {{GestionLibros.Api_HostAddress}}/api/Libros/5
+Content-Type: application/json
+
+{
+  "libroId": 5,
+  "titulo": "Libro de prueba modificado",
+  "autor": "Autor actualizado",
+  "anioPublicacion": 2021,
+  "cantidad": 15
+}
+
+### ELIMINAR UN LIBRO
+DELETE {{GestionLibros.Api_HostAddress}}/api/Libros/5
+Accept: application/json
+
+### VERIFICAR SI EXISTE UN TITULO
+GET {{GestionLibros.Api_HostAddress}}/api/Libros/ExisteTitulo?titulo=Libro%20de%20prueba%20API
+Accept: application/json
+
+###########################################
+
+
+### LISTAR PRESTAMOS
+GET {{GestionLibros.Api_HostAddress}}/api/Prestamos
+Accept: application/json
+
+### BUSCAR PRESTAMO POR ID
+GET {{GestionLibros.Api_HostAddress}}/api/Prestamos/5
+Accept: application/json
+
+### REGISTRAR PRESTAMO
+POST {{GestionLibros.Api_HostAddress}}/api/Prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": 5,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31",
+  "fechaDevolucion": null
+}
+
+### MODIFICAR PRESTAMO
+PUT {{GestionLibros.Api_HostAddress}}/api/Prestamos/6
+Content-Type: application/json
+
+{
+  "prestamoId": 6 ,
+  "estudianteId": 5,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31",
+  "fechaDevolucion": null
+}
+
+### REGISTRAR DEVOLUCION
+PUT {{GestionLibros.Api_HostAddress}}/api/Prestamos/5/devolucion
+Content-Type: application/json
+
+"2026-11-01"
+
+### ELIMINAR PRESTAMO
+DELETE {{GestionLibros.Api_HostAddress}}/api/Prestamos/5
+Accept: application/json

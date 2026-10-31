@@ -1,3 +1,7 @@
 <Solution>
+  <Project Path="GestionLibros.Api/GestionLibros.Api.csproj" Id="5fbcb1db-03b1-4947-a10d-c63033adf9c4">
+    <BuildDependency Project="GestionLibros.Data/GestionLibros.Data.csproj" />
+  </Project>
+  <Project Path="GestionLibros.Data/GestionLibros.Data.csproj" Id="7091bb60-c701-4186-8012-1752176e2f15" />
   <Project Path="GestionLibrosBlazor/GestionLibrosBlazor.csproj" />
 </Solution>
