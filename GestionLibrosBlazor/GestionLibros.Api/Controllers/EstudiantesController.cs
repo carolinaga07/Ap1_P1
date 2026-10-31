@@ -1,11 +1,10 @@
-﻿using GestionLibrosBlazor.Context;
-using GestionLibrosBlazor.Models;
-using GestionLibrosBlazor.Services;
+﻿using GestionLibros.Data.Models;
+using GestionLibros.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionLibros.Api.Controllers;
 
-[Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class EstudiantesController(
     EstudiantesService estudiantesService
@@ -14,8 +13,7 @@ public class EstudiantesController(
     [HttpGet]
     public async Task<ActionResult> GetList()
     {
-        var resultado = await estudiantesService
-             .GetList(e => true);
+        var resultado = await estudiantesService.GetList(e => true);
         return Ok(resultado);
     }
 
@@ -23,11 +21,15 @@ public class EstudiantesController(
     public async Task<ActionResult> Buscar(int id)
     {
         var resultado = await estudiantesService.Buscar(id);
+        if(resultado.Value is null)
+        {
+            return NotFound("Estudiante no encontrado");
+        }
         return Ok(resultado);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Guardar([FromBody] Estudiantes estudiantes)
+    public async Task<IActionResult> Guardar([FromBody] Estudiante estudiantes)
     {
         estudiantes.EstudianteId = 0;
         var resultado = await estudiantesService.Guardar(estudiantes);
@@ -35,16 +37,20 @@ public class EstudiantesController(
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Modificar(int id, [FromBody]Estudiantes estudiantes)
+    public async Task<IActionResult> Modificar(int id, [FromBody]Estudiante estudiantes)
     {
         if(id != estudiantes.EstudianteId)
         {
             return BadRequest("El Id del estudiante no coincide.");
         }
-        var resultado = await estudiantesService.Buscar(id);
-        var existe = await estudiantesService.GetList(e => e.EstudianteId == id);
-        var guardado = await estudiantesService.Guardar(estudiantes);
-        return Ok(guardado);
+
+        var existente = await estudiantesService.Buscar(id);
+        if(existente.Value is null)
+        {
+            return NotFound("Estudiante no encontrado");
+        }
+        var resultado = await estudiantesService.Guardar(estudiantes);
+        return Ok(resultado);
     }
 
     [HttpDelete("{id:int}")]

@@ -1,5 +1,5 @@
-﻿using GestionLibrosBlazor.Models;
-using GestionLibrosBlazor.Services;
+﻿using GestionLibros.Data.Models;
+using GestionLibros.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionLibros.Api.Controllers;
@@ -27,12 +27,9 @@ public class LibrosController(LibrosService librosService):ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Guardar([FromBody] Libros libros)
+    public async Task<IActionResult> Guardar([FromBody] Libro libros)
     {
         libros.LibroId = 0;
-        libros.Prestamo = new List<PrestamoLibro>();
-        libros.EntradasDetalles = new List<EntradasDetalle>();
-
         var resultado = await librosService.Guardar(libros);
 
         if(resultado.IsFailure)
@@ -43,7 +40,7 @@ public class LibrosController(LibrosService librosService):ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Modificar(int id, [FromBody] Libros libros)
+    public async Task<IActionResult> Modificar(int id, [FromBody] Libro libros)
     {
         if(id != libros.LibroId)
         {
@@ -55,9 +52,6 @@ public class LibrosController(LibrosService librosService):ControllerBase
         {
             return NotFound("El libro no existe");
         }
-
-        libros.Prestamo = new List<PrestamoLibro>();
-        libros.EntradasDetalles = new List<EntradasDetalle>();
 
         var resultado = await librosService.Guardar(libros);
 

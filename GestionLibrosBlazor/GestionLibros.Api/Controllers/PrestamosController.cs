@@ -1,6 +1,5 @@
-﻿using Azure.Core;
-using GestionLibrosBlazor.Models;
-using GestionLibrosBlazor.Services;
+﻿using GestionLibros.Data.Models;
+using GestionLibros.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionLibros.Api.Controllers;
@@ -70,7 +69,7 @@ public class PrestamosController(
             return BadRequest("El libro ya esta prestado");
         }
 
-        var prestamo = new PrestamoLibro
+        var prestamo = new Prestamo
         {
             EstudianteId = prestamoRequest.EstudianteId,
             LibroId = prestamoRequest.LibroId,
@@ -110,7 +109,7 @@ public class PrestamosController(
         if (await prestamoService.LibroEstaPrestado(prestamoRequest.LibroId, id))
             return BadRequest("El libro ya tiene otro préstamo activo.");
 
-        var prestamo = new PrestamoLibro
+        var prestamo = new Prestamo
         {
             PrestamoId = id,
             EstudianteId = prestamoRequest.EstudianteId,

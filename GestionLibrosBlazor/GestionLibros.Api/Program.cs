@@ -1,5 +1,5 @@
-using GestionLibrosBlazor.Context;
-using GestionLibrosBlazor.Services;
+using GestionLibros.Data.Context;
+using GestionLibros.Data.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
